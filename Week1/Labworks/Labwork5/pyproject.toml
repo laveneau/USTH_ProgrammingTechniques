@@ -10,4 +10,7 @@ dev = ["mypy", "matplotlib"]
 
 [tool.mypy]
 strict = true
+# Beyond --strict: the course forbids writing `Any` out by hand, so that a type the
+# checker cannot verify has to be spelled as a real type rather than waved through.
+disallow_any_explicit = true
 files = ["autodiff"]

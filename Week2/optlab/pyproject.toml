@@ -40,6 +40,9 @@ markers = [
 # No python_version pin: mypy then targets the interpreter you actually run, which
 # keeps it consistent with the numpy stubs installed alongside it.
 strict = true
+# Beyond --strict: the course forbids writing `Any` out by hand, so that a type the
+# checker cannot verify has to be spelled as a real type rather than waved through.
+disallow_any_explicit = true
 files = ["src"]
 
 [[tool.mypy.overrides]]
