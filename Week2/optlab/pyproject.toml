@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "optlab"
+version = "0.1.0"
+description = "Optimization by code — USTH Programming Techniques, Week 2"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26"]
+
+[project.optional-dependencies]
+# Oracles and plotting. Used by tests, benchmarks and notebooks ONLY.
+# Importing any of these from src/optlab/ fails tests/test_no_oracle_in_src.py.
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.8",
+    "ruff>=0.3",
+    "scipy>=1.11",
+    "scikit-learn>=1.4",
+    "matplotlib>=3.8",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "day1: losses, likelihood, gradient checking",
+    "day2: gradient descent and line search",
+    "day3: stochastic optimization",
+    "day4: second-order methods, Cholesky, regularizer",
+    "day5: nonlinear least squares (Gauss-Newton, Levenberg-Marquardt)",
+    "day6: proximal methods, sparsity, robustness",
+    "contract: interface contract tests, run against every implementation",
+]
+
+[tool.mypy]
+# No python_version pin: mypy then targets the interpreter you actually run, which
+# keeps it consistent with the numpy stubs installed alongside it.
+strict = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "sklearn.*", "matplotlib.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Stubs import what their finished implementation will need. Remove this entry once
+# the package is written: an unused import should be an error again by then.
+"src/optlab/**" = ["F401"]
+"tests/**" = ["E731"]

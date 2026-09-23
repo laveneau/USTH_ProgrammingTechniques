@@ -1,0 +1,13 @@
+[project]
+name = "autodiff"
+version = "0.1.0"
+description = "Week 1 project: forward- and reverse-mode automatic differentiation"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["mypy", "matplotlib"]
+
+[tool.mypy]
+strict = true
+files = ["autodiff"]
