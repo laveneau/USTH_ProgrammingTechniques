@@ -2,17 +2,24 @@
 
 These are the contracts of the week. You write implementations that inherit them; you
 never change an interface. An implementation may inherit several — for example
-`GLMLoss(Objective, TwiceDifferentiable, BatchObjective)` — which is the multiple
+`GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)` — which is the multiple
 inheritance of Week 1, Unit 1, used for real.
 
 Structurally these are the duck-typed contracts of Week 1, Unit 2. `typing.Protocol` is
 their structural twin; we use `ABC` because that is the mechanism Week 1 practices for
 SOLID, and because an explicit base class makes the contract tests trivial to write.
 
-Interface segregation is the point: `DescentOptimizer` asks only for an `Objective`,
-`SGD` only for a `BatchObjective`, `NewtonDirection` adds `TwiceDifferentiable`, and
-`GaussNewton` depends on `LeastSquaresProblem` — which is deliberately *not* an
-`Objective`. No implementation is ever forced to raise `NotImplementedError` to satisfy
+Two conventions from Week 1, Lecture 4 hold throughout this file. Every name carries the
+leading `I` that marks a contract, so a base-class list or an import line tells you at a
+glance what is a contract and what is a class. And every interface here is *pure*: each
+method is `@abstractmethod` with nothing but a docstring for a body, and no interface
+defines `__init__`, holds state, or offers a default an implementation could inherit.
+Every line of behaviour behind these contracts is one you write.
+
+Interface segregation is the point: `DescentOptimizer` asks only for an `IObjective`,
+`SGD` only for an `IBatchObjective`, `NewtonDirection` adds `ITwiceDifferentiable`, and
+`GaussNewton` depends on `ILeastSquaresProblem` — which is deliberately *not* an
+`IObjective`. No implementation is ever forced to raise `NotImplementedError` to satisfy
 a method it does not have.
 """
 
@@ -26,11 +33,11 @@ from .types import Index, Mat, Vec
 # --------------------------------------------------------------------------- #
 
 
-class Objective(ABC):
+class IObjective(ABC):
     """A differentiable scalar function of a parameter vector.
 
     The two methods must be consistent: `gradient(x)` is the gradient of `value` at `x`.
-    `check_gradient` (day 1) is what proves it, and the `Objective` contract test runs
+    `check_gradient` (day 1) is what proves it, and the `IObjective` contract test runs
     that check over every implementation.
     """
 
@@ -43,10 +50,10 @@ class Objective(ABC):
         """∇f(x), with the same shape as `x`."""
 
 
-class TwiceDifferentiable(ABC):
+class ITwiceDifferentiable(ABC):
     """An objective that can also produce its Hessian.
 
-    Mixed into an `Objective`; required by `NewtonDirection`.
+    Mixed into an `IObjective`; required by `NewtonDirection`.
     """
 
     @abstractmethod
@@ -54,10 +61,10 @@ class TwiceDifferentiable(ABC):
         """∇²f(x), symmetric of shape (n, n)."""
 
 
-class BatchObjective(ABC):
+class IBatchObjective(ABC):
     """A finite-sum objective f(x) = (1/n) Σ fᵢ(x) whose terms can be sampled.
 
-    Mixed into an `Objective`; required by `SGD` and `Adam`. The batch gradient must be
+    Mixed into an `IObjective`; required by `SGD` and `Adam`. The batch gradient must be
     an unbiased estimate of the full gradient: averaging `batch_gradient` over all
     indices must reproduce `gradient` exactly.
     """
@@ -72,7 +79,7 @@ class BatchObjective(ABC):
         """The gradient of the mean of the terms selected by `idx`."""
 
 
-class PointwiseLoss(ABC):
+class IPointwiseLoss(ABC):
     """A per-sample loss φ(z, y) and its first two derivatives with respect to z.
 
     `z` is the linear predictor Xw, `y` the observation. Vectorized: all three take and
@@ -93,10 +100,10 @@ class PointwiseLoss(ABC):
         """∂²φ/∂z², elementwise. Non-negative for the convex losses of this course."""
 
 
-class LeastSquaresProblem(ABC):
+class ILeastSquaresProblem(ABC):
     """A nonlinear least-squares problem: minimize ½‖r(x)‖².
 
-    Deliberately NOT an `Objective`. Gauss-Newton and Levenberg-Marquardt need the
+    Deliberately NOT an `IObjective`. Gauss-Newton and Levenberg-Marquardt need the
     residuals and the Jacobian separately — collapsing them into value/gradient would
     throw away the structure that makes those methods work. This is interface
     segregation as a design decision, not an accident.
@@ -116,7 +123,7 @@ class LeastSquaresProblem(ABC):
 # --------------------------------------------------------------------------- #
 
 
-class Regularizer(ABC):
+class IRegularizer(ABC):
     """A penalty r(w), separate from the data-fit loss.
 
     `gradient` is allowed to raise for a non-smooth penalty (L1 does): that is exactly
@@ -146,7 +153,7 @@ class Regularizer(ABC):
 # --------------------------------------------------------------------------- #
 
 
-class DirectionRule(ABC):
+class IDirectionRule(ABC):
     """Chooses the search direction at the current point.
 
     May be stateful (`HeavyBall` keeps the previous step). A direction must be a descent
@@ -154,22 +161,22 @@ class DirectionRule(ABC):
     """
 
     @abstractmethod
-    def direction(self, objective: Objective, x: Vec, g: Vec) -> Vec:
+    def direction(self, objective: IObjective, x: Vec, g: Vec) -> Vec:
         """The search direction at `x`, where the gradient is `g`."""
 
 
-class LineSearch(ABC):
+class ILineSearch(ABC):
     """Chooses how far to move along a given direction."""
 
     @abstractmethod
-    def step(self, objective: Objective, x: Vec, g: Vec, d: Vec) -> float:
+    def step(self, objective: IObjective, x: Vec, g: Vec, d: Vec) -> float:
         """The step length α > 0 to take along `d`.
 
         Raises `LineSearchFailed` if no acceptable step was found.
         """
 
 
-class StoppingCriterion(ABC):
+class IStoppingCriterion(ABC):
     """Decides when the loop ends, from the event of the step just taken."""
 
     @abstractmethod
@@ -177,7 +184,7 @@ class StoppingCriterion(ABC):
         """True if the optimizer should stop now."""
 
 
-class Observer(ABC):
+class IObserver(ABC):
     """Watches the loop without influencing it. `History` is the one you write."""
 
     @abstractmethod
@@ -190,7 +197,7 @@ class Observer(ABC):
 # --------------------------------------------------------------------------- #
 
 
-class LinearSolver(ABC):
+class ILinearSolver(ABC):
     """Solves A x = b for a symmetric positive definite A.
 
     One abstraction, reused by `NewtonDirection`, `GaussNewton` and
@@ -206,12 +213,12 @@ class LinearSolver(ABC):
         """
 
 
-class Optimizer(ABC):
+class IOptimizer(ABC):
     """Minimizes an objective from a starting point.
 
-    The argument is typed `object` because the family is wider than `Objective`:
-    `GaussNewton` and `LevenbergMarquardt` minimize a `LeastSquaresProblem`, and `SGD`
-    needs a `BatchObjective`. Each implementation narrows this in its own signature and
+    The argument is typed `object` because the family is wider than `IObjective`:
+    `GaussNewton` and `LevenbergMarquardt` minimize an `ILeastSquaresProblem`, and `SGD`
+    needs an `IBatchObjective`. Each implementation narrows this in its own signature and
     documents what it requires.
     """
 

@@ -1,21 +1,21 @@
 """[DAY 4] Combining an objective with a regularizer."""
 
-from .interfaces import Objective, Regularizer, TwiceDifferentiable
+from .interfaces import IObjective, IRegularizer, ITwiceDifferentiable
 from .types import Mat, Vec
 
 
-class RegularizedObjective(Objective, TwiceDifferentiable):
-    """f(w) + r(w), presented as a single `Objective`.
+class RegularizedObjective(IObjective, ITwiceDifferentiable):
+    """f(w) + r(w), presented as a single `IObjective`.
 
     An adapter, and the open/closed moment of the week: ridge regression is not a new
     optimizer, a new loss, or a new anything — it is `RegularizedObjective(GLMLoss, L2)`
     handed to an optimizer you already wrote. Every method from days 2 and 3 gains a
     regularized version the moment this class exists.
 
-    Requires a `TwiceDifferentiable` inner objective only if you ask it for a Hessian.
+    Requires an `ITwiceDifferentiable` inner objective only if you ask it for a Hessian.
     """
 
-    def __init__(self, objective: Objective, regularizer: Regularizer) -> None:
+    def __init__(self, objective: IObjective, regularizer: IRegularizer) -> None:
         self.objective = objective
         self.regularizer = regularizer
 

@@ -7,11 +7,11 @@ ridge does not.
 
 import numpy as np
 
-from .interfaces import Regularizer
+from .interfaces import IRegularizer
 from .types import Vec
 
 
-class NoRegularizer(Regularizer):
+class NoRegularizer(IRegularizer):
     """[DAY 4] r(w) = 0. The neutral element, so unregularized fitting is not a special case."""
 
     def value(self, w: Vec) -> float:
@@ -24,7 +24,7 @@ class NoRegularizer(Regularizer):
         raise NotImplementedError("[DAY 4] lab 4")
 
 
-class L2(Regularizer):
+class L2(IRegularizer):
     """[DAY 4] r(w) = ½λ‖w‖². Ridge. Smooth, so ordinary descent and Newton handle it.
 
     Its prox is the shrinkage w / (1 + λt). Adding λI to the Hessian also makes it
@@ -45,7 +45,7 @@ class L2(Regularizer):
         raise NotImplementedError("[DAY 4] lab 4")
 
 
-class L1(Regularizer):
+class L1(IRegularizer):
     """[DAY 6] r(w) = λ‖w‖₁. Lasso. NOT differentiable at zero.
 
     `gradient` must raise `NotImplementedError` — that is not a gap, it is the contract.
@@ -66,7 +66,7 @@ class L1(Regularizer):
         raise NotImplementedError("[DAY 6] lab 1")
 
 
-class ElasticNet(Regularizer):
+class ElasticNet(IRegularizer):
     """[DAY 6] λ(α‖w‖₁ + ½(1−α)‖w‖²). Sparsity plus the stability of ridge.
 
     Its prox composes the two: soft-threshold, then shrink.

@@ -1,4 +1,4 @@
-"""Liskov substitution, made executable: every `Objective` must satisfy the same test.
+"""Liskov substitution, made executable: every `IObjective` must satisfy the same test.
 
 Add your implementations to `OBJECTIVES` as you write them. If a subclass cannot pass a
 test its base class passes, it is not substitutable — and the design, not the test, is
@@ -13,11 +13,11 @@ from collections.abc import Callable
 import numpy as np
 import pytest
 
-from optlab.interfaces import Objective
+from optlab.interfaces import IObjective
 from optlab.numerics import check_gradient
 from optlab.problems import Quadratic, Rosenbrock, linear_regression, logistic_regression
 
-Case = tuple[Callable[[], Objective], Callable[[], np.ndarray]]
+Case = tuple[Callable[[], IObjective], Callable[[], np.ndarray]]
 
 
 def _design_matrix() -> tuple[np.ndarray, np.ndarray, np.ndarray]:

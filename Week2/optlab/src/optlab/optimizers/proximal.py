@@ -5,18 +5,18 @@ wants to be. The proximal gradient method takes a gradient step on the smooth pa
 then applies the prox of the penalty, which for L1 is the soft-threshold — and the
 threshold is what sets coefficients to exactly zero rather than merely small.
 
-This optimizer needs `Regularizer.prox` and nothing else. It never calls `gradient` on
+This optimizer needs `IRegularizer.prox` and nothing else. It never calls `gradient` on
 the penalty, which is why `L1.gradient` is free to raise.
 """
 
 import numpy as np
 
-from ..interfaces import Objective, Observer, Optimizer, Regularizer, StoppingCriterion
+from ..interfaces import IObjective, IObserver, IOptimizer, IRegularizer, IStoppingCriterion
 from ..results import OptimizeResult
 from ..types import Vec
 
 
-class ProximalGradient(Optimizer):
+class ProximalGradient(IOptimizer):
     """ISTA:  w⁺ = prox_{α·r}(w − α·∇f(w)),  requiring α <= 1/L.
 
     With `accelerated=True`, FISTA: the same step with Nesterov momentum on the
@@ -28,13 +28,13 @@ class ProximalGradient(Optimizer):
 
     def __init__(
         self,
-        smooth: Objective,
-        reg: Regularizer,
+        smooth: IObjective,
+        reg: IRegularizer,
         step: float = 0.01,
         max_iter: int = 1000,
         tol: float = 1e-8,
         accelerated: bool = False,
-        observers: list[Observer] | None = None,
+        observers: list[IObserver] | None = None,
     ) -> None:
         self.smooth = smooth
         self.reg = reg

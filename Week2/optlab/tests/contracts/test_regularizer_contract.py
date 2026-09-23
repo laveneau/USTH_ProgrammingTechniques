@@ -1,4 +1,4 @@
-"""Every `Regularizer` must satisfy the defining identity of its proximal operator:
+"""Every `IRegularizer` must satisfy the defining identity of its proximal operator:
 
     prox_{t·r}(v) = argmin_w  ½‖w − v‖² + t·r(w)
 
@@ -10,18 +10,18 @@ convergence test would only reveal much later and much more confusingly.
 import numpy as np
 import pytest
 
-from optlab.interfaces import Regularizer
+from optlab.interfaces import IRegularizer
 from optlab.regularizers import L1, L2, ElasticNet, NoRegularizer
 
 DAY4 = [("none", NoRegularizer()), ("l2", L2(lam=0.7))]
 DAY6 = [("l1", L1(lam=0.5)), ("elasticnet", ElasticNet(lam=0.5, alpha=0.6))]
 
 
-def _prox_objective(w: np.ndarray, v: np.ndarray, t: float, reg: Regularizer) -> float:
+def _prox_objective(w: np.ndarray, v: np.ndarray, t: float, reg: IRegularizer) -> float:
     return 0.5 * float(np.sum((w - v) ** 2)) + t * reg.value(w)
 
 
-def _assert_prox_is_optimal(reg: Regularizer, v: np.ndarray, t: float, rng) -> None:
+def _assert_prox_is_optimal(reg: IRegularizer, v: np.ndarray, t: float, rng) -> None:
     w = reg.prox(v, t)
     best = _prox_objective(w, v, t, reg)
     for _ in range(200):
@@ -32,7 +32,7 @@ def _assert_prox_is_optimal(reg: Regularizer, v: np.ndarray, t: float, rng) -> N
 @pytest.mark.contract
 @pytest.mark.day4
 @pytest.mark.parametrize("name,reg", DAY4, ids=[n for n, _ in DAY4])
-def test_prox_minimizes_its_defining_objective(name: str, reg: Regularizer, rng) -> None:
+def test_prox_minimizes_its_defining_objective(name: str, reg: IRegularizer, rng) -> None:
     _assert_prox_is_optimal(reg, np.array([3.0, -0.4, 0.1, 0.0]), 0.5, rng)
 
 
@@ -40,7 +40,7 @@ def test_prox_minimizes_its_defining_objective(name: str, reg: Regularizer, rng)
 @pytest.mark.day6
 @pytest.mark.parametrize("name,reg", DAY6, ids=[n for n, _ in DAY6])
 def test_non_smooth_prox_minimizes_its_defining_objective(
-    name: str, reg: Regularizer, rng
+    name: str, reg: IRegularizer, rng
 ) -> None:
     _assert_prox_is_optimal(reg, np.array([3.0, -0.4, 0.1, 0.0]), 0.5, rng)
 
@@ -48,7 +48,7 @@ def test_non_smooth_prox_minimizes_its_defining_objective(
 @pytest.mark.contract
 @pytest.mark.day4
 @pytest.mark.parametrize("name,reg", DAY4 + DAY6, ids=[n for n, _ in DAY4 + DAY6])
-def test_prox_with_t_zero_is_the_identity(name: str, reg: Regularizer) -> None:
+def test_prox_with_t_zero_is_the_identity(name: str, reg: IRegularizer) -> None:
     v = np.array([3.0, -0.4, 0.1, 0.0])
     np.testing.assert_allclose(reg.prox(v, 0.0), v, rtol=1e-12, atol=1e-14)
 

@@ -2,11 +2,11 @@
 
 import numpy as np
 
-from ..interfaces import Objective, TwiceDifferentiable
+from ..interfaces import IObjective, ITwiceDifferentiable
 from ..types import Mat, Vec
 
 
-class Quadratic(Objective, TwiceDifferentiable):
+class Quadratic(IObjective, ITwiceDifferentiable):
     """f(x) = ½xᵀAx − bᵀx, for symmetric positive definite A.
 
     Everything about first-order methods is visible here: the gradient descent rate is

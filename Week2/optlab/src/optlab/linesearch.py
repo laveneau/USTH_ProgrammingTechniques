@@ -1,11 +1,11 @@
 """[DAY 2] How far to move along a direction."""
 
 from .errors import LineSearchFailed
-from .interfaces import LineSearch, Objective
+from .interfaces import ILineSearch, IObjective
 from .types import Vec
 
 
-class FixedStep(LineSearch):
+class FixedStep(ILineSearch):
     """A constant step length, ignoring the objective entirely.
 
     Safe when alpha <= 1/L for an L-smooth f; diverges above 2/L, which day 2 asks you
@@ -15,11 +15,11 @@ class FixedStep(LineSearch):
     def __init__(self, alpha: float = 0.01) -> None:
         self.alpha = alpha
 
-    def step(self, objective: Objective, x: Vec, g: Vec, d: Vec) -> float:
+    def step(self, objective: IObjective, x: Vec, g: Vec, d: Vec) -> float:
         raise NotImplementedError("[DAY 2] lab 1")
 
 
-class Armijo(LineSearch):
+class Armijo(ILineSearch):
     """Backtracking until the sufficient-decrease condition holds:
 
         f(x + αd) <= f(x) + c1·α·gᵀd
@@ -44,5 +44,5 @@ class Armijo(LineSearch):
         self.rho = rho
         self.max_backtracks = max_backtracks
 
-    def step(self, objective: Objective, x: Vec, g: Vec, d: Vec) -> float:
+    def step(self, objective: IObjective, x: Vec, g: Vec, d: Vec) -> float:
         raise NotImplementedError("[DAY 2] lab 2")

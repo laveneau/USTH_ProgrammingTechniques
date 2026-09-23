@@ -2,19 +2,19 @@
 
 Gradient descent, momentum, Newton and ridge are all this loop with different objects
 plugged in. If you find yourself editing it on day 4 to make Newton work, something
-belongs in a `DirectionRule` or a `LineSearch` instead.
+belongs in an `IDirectionRule` or an `ILineSearch` instead.
 """
 
 import numpy as np
 
 from ..errors import LineSearchFailed
 from ..interfaces import (
-    DirectionRule,
-    LineSearch,
-    Objective,
-    Observer,
-    Optimizer,
-    StoppingCriterion,
+    IDirectionRule,
+    ILineSearch,
+    IObjective,
+    IObserver,
+    IOptimizer,
+    IStoppingCriterion,
 )
 from ..linalg import CholeskySolver
 from ..linesearch import Armijo, FixedStep
@@ -24,7 +24,7 @@ from ..types import Vec
 from .directions import HeavyBall, NewtonDirection, SteepestDescent
 
 
-class DescentOptimizer(Optimizer):
+class DescentOptimizer(IOptimizer):
     """x ← x + α·d, where `direction` chooses d and `line_search` chooses α.
 
     Every collaborator arrives through the constructor. The loop itself only:
@@ -36,10 +36,10 @@ class DescentOptimizer(Optimizer):
 
     def __init__(
         self,
-        direction: DirectionRule,
-        line_search: LineSearch,
-        stop: StoppingCriterion,
-        observers: list[Observer] | None = None,
+        direction: IDirectionRule,
+        line_search: ILineSearch,
+        stop: IStoppingCriterion,
+        observers: list[IObserver] | None = None,
     ) -> None:
         self.direction = direction
         self.line_search = line_search
@@ -47,7 +47,7 @@ class DescentOptimizer(Optimizer):
         self.observers = observers or []
 
     def minimize(self, objective: object, x0: Vec) -> OptimizeResult:
-        """Requires an `Objective`."""
+        """Requires an `IObjective`."""
         raise NotImplementedError("[DAY 2] lab 1")
 
 

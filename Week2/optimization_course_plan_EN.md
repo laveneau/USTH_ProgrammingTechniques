@@ -147,23 +147,23 @@ We do optimization, not "ML": accuracy is a sanity check; the real check is agre
 
 ## 3. SOLID architecture: interfaces provided, implementations to write
 
-All interfaces are shipped whole in `interfaces.py` as **abstract base classes** (`ABC` + `@abstractmethod`), exactly the mechanism Week 1 uses for SOLID (Lecture 4, Labwork 3–4). Students write **implementations** that inherit them, and never edit an interface. An implementation may inherit **several** ABCs (e.g. `GLMLoss(Objective, TwiceDifferentiable, BatchObjective)`) — a direct use of the multiple inheritance seen in Lecture 1. Structurally these are the "duck-typed" contracts of Lecture 2; `Protocol` is the structural-typing twin, mentioned once and not required. The Week-1 `autodiff` module is present and used as a gradient oracle.
+All interfaces are shipped whole in `interfaces.py` as **abstract base classes** (`ABC` + `@abstractmethod`), exactly the mechanism Week 1 uses for SOLID (Lecture 4, Labwork 3–4), and following the two conventions stated there: each is named with a leading capital `I`, and each is **pure** — every method abstract, no implementation and no state, so every line of behaviour behind a contract is written by the student. Students write **implementations** that inherit them, and never edit an interface. An implementation may inherit **several** ABCs (e.g. `GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)`) — a direct use of the multiple inheritance seen in Lecture 1. Structurally these are the "duck-typed" contracts of Lecture 2; `Protocol` is the structural-typing twin, mentioned once and not required. The Week-1 `autodiff` module is present and used as a gradient oracle.
 
 ### The interfaces (abstract base classes)
 | Interface | Methods | Implementations to write | Day | Depended on by |
 |---|---|---|---|---|
-| `Objective` | `value(x)`, `gradient(x)` | `Quadratic`, `Rosenbrock`, `GLMLoss` | 1 | optimizers, line search, gradient check |
-| `PointwiseLoss` | `value(z,y)`, `d1(z,y)`, `d2(z,y)` | `SquaredError`, `LogisticNLL`, `Huber`, `PoissonNLL` | 1 (Huber/Poisson D6) | `GLMLoss` |
-| `BatchObjective` | `n_samples`, `batch_gradient(x, idx)` | `GLMLoss` | 3 | `SGD`, `Adam` |
-| `TwiceDifferentiable` | `hessian(x)` | `Quadratic`, `Rosenbrock`, `GLMLoss` | 4 | `NewtonDirection` |
-| `LinearSolver` | `solve(A, b) -> Vec` | `CholeskySolver` | 4 | `NewtonDirection`, `GaussNewton`, `LevenbergMarquardt` |
-| `LeastSquaresProblem` | `residuals(x)`, `jacobian(x)` | curve-fit problems | 5 | `GaussNewton`, `LevenbergMarquardt` |
-| `Regularizer` | `value(w)`, `gradient(w)`, `prox(w, t)` | `NoRegularizer`, `L2` (D4), `L1`, `ElasticNet` (D6) | 4–6 | `RegularizedObjective`, `ProximalGradient` |
-| `LineSearch` | `step(objective, x, g, d)` | `FixedStep`, `Armijo` | 2 | `DescentOptimizer` |
-| `DirectionRule` | `direction(objective, x, g)` | `SteepestDescent`, `HeavyBall`, `NewtonDirection` | 2–4 | `DescentOptimizer` |
-| `StoppingCriterion` | `should_stop(event)` | `GradientNormBelow`, `MaxIterations`, `AnyOf` | 2 | all optimizers |
-| `Observer` | `on_step(event)` | `History` | 2 | all optimizers |
-| `Optimizer` | `minimize(objective, x0) -> OptimizeResult` | `DescentOptimizer` (D2), `SGD`/`Adam` (D3), `GaussNewton`/`LevenbergMarquardt` (D5), `ProximalGradient` (D6) | 2–6 | notebooks, benchmark |
+| `IObjective` | `value(x)`, `gradient(x)` | `Quadratic`, `Rosenbrock`, `GLMLoss` | 1 | optimizers, line search, gradient check |
+| `IPointwiseLoss` | `value(z,y)`, `d1(z,y)`, `d2(z,y)` | `SquaredError`, `LogisticNLL`, `Huber`, `PoissonNLL` | 1 (Huber/Poisson D6) | `GLMLoss` |
+| `IBatchObjective` | `n_samples`, `batch_gradient(x, idx)` | `GLMLoss` | 3 | `SGD`, `Adam` |
+| `ITwiceDifferentiable` | `hessian(x)` | `Quadratic`, `Rosenbrock`, `GLMLoss` | 4 | `NewtonDirection` |
+| `ILinearSolver` | `solve(A, b) -> Vec` | `CholeskySolver` | 4 | `NewtonDirection`, `GaussNewton`, `LevenbergMarquardt` |
+| `ILeastSquaresProblem` | `residuals(x)`, `jacobian(x)` | curve-fit problems | 5 | `GaussNewton`, `LevenbergMarquardt` |
+| `IRegularizer` | `value(w)`, `gradient(w)`, `prox(w, t)` | `NoRegularizer`, `L2` (D4), `L1`, `ElasticNet` (D6) | 4–6 | `RegularizedObjective`, `ProximalGradient` |
+| `ILineSearch` | `step(objective, x, g, d)` | `FixedStep`, `Armijo` | 2 | `DescentOptimizer` |
+| `IDirectionRule` | `direction(objective, x, g)` | `SteepestDescent`, `HeavyBall`, `NewtonDirection` | 2–4 | `DescentOptimizer` |
+| `IStoppingCriterion` | `should_stop(event)` | `GradientNormBelow`, `MaxIterations`, `AnyOf` | 2 | all optimizers |
+| `IObserver` | `on_step(event)` | `History` | 2 | all optimizers |
+| `IOptimizer` | `minimize(objective, x0) -> OptimizeResult` | `DescentOptimizer` (D2), `SGD`/`Adam` (D3), `GaussNewton`/`LevenbergMarquardt` (D5), `ProximalGradient` (D6) | 2–6 | notebooks, benchmark |
 
 Provided (not written): `OptimizeResult`, `StepEvent` (frozen dataclasses — the `@dataclass` first met in the Week 1 project), `NotPositiveDefiniteError`, `LineSearchFailed`.
 
@@ -175,8 +175,8 @@ Gradient descent = SteepestDescent            + Armijo
 Momentum         = HeavyBall                  + FixedStep
 Newton           = NewtonDirection(CholeskySolver) + Armijo                (D4)
 Ridge (smooth)   = any of the above, on RegularizedObjective(GLMLoss, L2)  (D4)
-SGD / Adam       = own Optimizers over a BatchObjective                     (D3)
-Gauss–Newton     = GaussNewton(CholeskySolver)  on a LeastSquaresProblem    (D5)
+SGD / Adam       = own Optimizers over an IBatchObjective                   (D3)
+Gauss–Newton     = GaussNewton(CholeskySolver)  on an ILeastSquaresProblem  (D5)
 Levenberg–Marq.  = LevenbergMarquardt(CholeskySolver) (JᵀJ + λI)            (D5)
 Lasso            = ProximalGradient(smooth=GLMLoss, reg=L1)                 (D6)
 ```
@@ -185,11 +185,11 @@ Showcase OCP moments: **ridge** = any existing optimizer on `RegularizedObjectiv
 ### SOLID, principle by principle
 | Principle | In the course code |
 |---|---|
-| **S** | `GLMLoss` = data-fit loss; `Regularizer` = penalty (separated); `CholeskySolver` = factorization; `GaussNewton` = the outer iteration, not the solve |
+| **S** | `GLMLoss` = data-fit loss; `IRegularizer` = penalty (separated); `CholeskySolver` = factorization; `GaussNewton` = the outer iteration, not the solve |
 | **O** | SGD, Adam, Newton, ridge, GN, LM, lasso, Poisson, Huber are added without editing existing classes |
-| **L** | contract tests over all implementations: `Objective`, `PointwiseLoss`, `LinearSolver`, `Regularizer` |
-| **I** | descent needs only `Objective`; SGD only `BatchObjective`; Newton adds `TwiceDifferentiable`; GN/LM depend on `LeastSquaresProblem` (not `Objective`); proximal needs only `Regularizer.prox` |
-| **D** | optimizers receive direction / line search / stopping / observers / rng / **solver** by constructor; `GLMLoss` receives its `PointwiseLoss` |
+| **L** | contract tests over all implementations: `IObjective`, `IPointwiseLoss`, `ILinearSolver`, `IRegularizer` |
+| **I** | descent needs only `IObjective`; SGD only `IBatchObjective`; Newton adds `ITwiceDifferentiable`; GN/LM depend on `ILeastSquaresProblem` (not `IObjective`); proximal needs only `IRegularizer.prox` |
+| **D** | optimizers receive direction / line search / stopping / observers / rng / **solver** by constructor; `GLMLoss` receives its `IPointwiseLoss` |
 
 ### KISS — deliberately not built
 A home-grown `Vector`; `DidNotConverge`; `requires_grad`/op-registry (autodiff kept simple, Week 1); sparse matrices / CG / PCG (out this revision). Generic `Num2` lives in `labs/`.
@@ -209,7 +209,7 @@ optlab/
 │   ├── problems/
 │   │   ├── glm.py                     # D1 GLMLoss (value, gradient) · D4 hessian
 │   │   ├── quadratic.py · rosenbrock.py  # D1 · D4 hessian
-│   │   └── curve_fitting.py           # D5 LeastSquaresProblem instances
+│   │   └── curve_fitting.py           # D5 ILeastSquaresProblem instances
 │   ├── regularizers.py                # D4 L2 · D6 L1, ElasticNet, NoRegularizer
 │   ├── objective_ops.py               # D4 RegularizedObjective (adapter)
 │   ├── linalg/cholesky.py             # D4 CholeskySolver
@@ -240,7 +240,7 @@ optlab/
 | 0:55 | 25 | Setup + guided tour of the architecture (the ABCs) |
 | 1:20 | 25 | Lab 0: **numpy ramp** (arrays, broadcasting, `@`, `np.linalg`) |
 | 1:45 | 35 | Lab 1: gradient check (FD + autodiff oracle) |
-| 2:20 | 55 | Lab 2: `PointwiseLoss` + `GLMLoss` |
+| 2:20 | 55 | Lab 2: `IPointwiseLoss` + `GLMLoss` |
 | 3:15 | 20 | Lab 3: conditioning & the data |
 | 3:35 | 20 | Debrief |
 
@@ -252,11 +252,11 @@ optlab/
 
 **Lab 1 — Gradient check.** `numerical_gradient`, `check_gradient`; also compare to the Week-1 `autodiff_gradient` as a second oracle. Tests incl. a deliberately wrong gradient; error-vs-`h` U-curve.
 
-**Lab 2 — Losses and `GLMLoss`.** `SquaredError`, `LogisticNLL` (`PointwiseLoss`); `GLMLoss(X, y, pointwise)` (value = mean of φ; gradient = `Xᵀ·d1/n`); `linear_regression`, `logistic_regression` assemblies; `Quadratic`, `Rosenbrock`. **One class for all GLMs** (DRY/SRP), receiving the pointwise loss (DIP); **no `λ` yet** (regularizer is separate, D4). Tests: pointwise derivatives vs numerical; `GLMLoss.gradient` via `check_gradient` **and** autodiff; hand values; `Objective` contract test over all four. Oracle: ridge closed form; logistic vs scikit-learn later.
+**Lab 2 — Losses and `GLMLoss`.** `SquaredError`, `LogisticNLL` (`IPointwiseLoss`); `GLMLoss(X, y, pointwise)` (value = mean of φ; gradient = `Xᵀ·d1/n`); `linear_regression`, `logistic_regression` assemblies; `Quadratic`, `Rosenbrock`. **One class for all GLMs** (DRY/SRP), receiving the pointwise loss (DIP); **no `λ` yet** (regularizer is separate, D4). Tests: pointwise derivatives vs numerical; `GLMLoss.gradient` via `check_gradient` **and** autodiff; hand values; `IObjective` contract test over all four. Oracle: ridge closed form; logistic vs scikit-learn later.
 
 **Lab 3 — Conditioning & data.** On raw *California housing*: build `A=XᵀX/n`; compute `κ` before/after standardization (oracle); see the level sets stretch. Sets up D2/D4.
 
-**SOLID / NB / Plan B / Q.** S: loss vs future regularizer vs problem. I: `Objective` = two methods. NB: likelihood→loss picture; level sets vs κ; FD curve. Plan B: ship `value`, write `gradient`. Q: why is squared error the Gaussian MLE? why does scale change κ?
+**SOLID / NB / Plan B / Q.** S: loss vs future regularizer vs problem. I: `IObjective` = two methods. NB: likelihood→loss picture; level sets vs κ; FD curve. Plan B: ship `value`, write `gradient`. Q: why is squared error the Gaussian MLE? why does scale change κ?
 
 ---
 
@@ -277,11 +277,11 @@ optlab/
 
 **Worked examples.** `f=½(x₁²+100x₂²)`: GD ≈ **690** steps vs heavy ball ≈ **70** vs Newton **1** (D4). Armijo by hand (`f=x²`, reject `α=1`, accept `0.5`).
 
-**Lab 1 — The one loop.** `DescentOptimizer(direction, line_search, stop, observers)`; `SteepestDescent`; `FixedStep`; `GradientNormBelow/MaxIterations/AnyOf`; `History` (Observer). **Written once, never again**: Newton (D4) will be just another direction. Tests: convergence on a well-conditioned quadratic; empirical rate within ±10 %; `converged=False` at `max_iter`; one event per step (SRP).
+**Lab 1 — The one loop.** `DescentOptimizer(direction, line_search, stop, observers)`; `SteepestDescent`; `FixedStep`; `GradientNormBelow/MaxIterations/AnyOf`; `History` (IObserver). **Written once, never again**: Newton (D4) will be just another direction. Tests: convergence on a well-conditioned quadratic; empirical rate within ±10 %; `converged=False` at `max_iter`; one event per step (SRP).
 
-**Lab 2 — Armijo.** Injected in place of `FixedStep`, **no loop edit** (OCP); `LineSearchFailed` caught → `converged=False`. Compare on `κ=100` and on logistic (*breast cancer*). Tests: hand example; `LineSearch` contract test.
+**Lab 2 — Armijo.** Injected in place of `FixedStep`, **no loop edit** (OCP); `LineSearchFailed` caught → `converged=False`. Compare on `κ=100` and on logistic (*breast cancer*). Tests: hand example; `ILineSearch` contract test.
 
-**Lab 3 — Momentum & conditioning.** `HeavyBall` (stateful `DirectionRule`). Compare GD / GD+Armijo / heavy ball; recover rates; on *digits* reshape `w` to 8×8. Force divergence with too-large a step; explain via `1/L`.
+**Lab 3 — Momentum & conditioning.** `HeavyBall` (stateful `IDirectionRule`). Compare GD / GD+Armijo / heavy ball; recover rates; on *digits* reshape `w` to 8×8. Force divergence with too-large a step; explain via `1/L`.
 
 **SOLID / NB / Plan B / Q.** S: loop/step/stopping/recording separate. O: momentum/Armijo add no line. NB: zigzag; log `‖∇f‖`; `w`-image. Plan B: ship `Armijo` skeleton. Q: why is `1/L` safe? why does momentum help?
 
@@ -290,7 +290,7 @@ optlab/
 ### Day 3 — Stochastic optimization (how modern ML trains)
 **Headline.** When `n` is large, use a *sample* of the gradient. SGD, schedules, momentum, Adam.
 
-**Deliverable.** `BatchObjective` on `GLMLoss`; `SGD`, `Adam`.
+**Deliverable.** `IBatchObjective` on `GLMLoss`; `SGD`, `Adam`.
 
 | Time | Len | Activity |
 |---|---|---|
@@ -313,7 +313,7 @@ optlab/
 
 **Lab 4 — Batch/noise study.** On *a9a*/*covertype*: loss vs **epoch** for `b∈{1,32,256,n}` and SGD vs Adam; wall-clock vs epochs; noise floor. Mini-conclusion feeds the D6 benchmark note.
 
-**SOLID / NB / Plan B / Q.** O: SGD/Adam are new `Optimizer`s; the D2 loop and `GLMLoss` untouched. I: depend only on `BatchObjective`. Plan B: ship the epoch/shuffle loop; write the updates. Q: why unbiased? why does a constant step not reach the exact optimum? what does Adam adapt to?
+**SOLID / NB / Plan B / Q.** O: SGD/Adam are new `IOptimizer`s; the D2 loop and `GLMLoss` untouched. I: depend only on `IBatchObjective`. Plan B: ship the epoch/shuffle loop; write the updates. Q: why unbiased? why does a constant step not reach the exact optimum? what does Adam adapt to?
 
 ---
 
@@ -335,13 +335,13 @@ optlab/
 
 **Worked examples.** Newton 1-D `eˣ−2x`: `1→0.7358→0.6940→0.693147` (digits double); Cholesky by hand `[[4,2,2],[2,5,3],[2,3,6]]→L=[[2,0,0],[1,2,0],[1,1,2]]`; Cholesky fails on `[[1,2],[2,1]]` (`L₂₂²=−3`); separable Iris, `λ=0` ⇒ `‖w‖→∞`.
 
-**Lab 1 — Cholesky.** `CholeskySolver` (`solve(A,b)` via `LLᵀ`); `cholesky`, `solve_lower`, `solve_upper_from_lower`; `NotPositiveDefiniteError` provided; vectorize over `i`. Tests: **`LinearSolver` contract test**; vs `np.linalg` (oracle); negative eigenvalue → error; Hilbert (residual small, error large).
+**Lab 1 — Cholesky.** `CholeskySolver` (`solve(A,b)` via `LLᵀ`); `cholesky`, `solve_lower`, `solve_upper_from_lower`; `NotPositiveDefiniteError` provided; vectorize over `i`. Tests: **`ILinearSolver` contract test**; vs `np.linalg` (oracle); negative eigenvalue → error; Hilbert (residual small, error large).
 
 **Lab 2 — Hessian & Newton.** `GLMLoss.hessian=XᵀDX/n`; `check_hessian` via `numerical_jacobian` (DRY). `NewtonDirection(linear_solver)`; `newton()` assembly. **No loop edit**. Tests: linear in **1** iter vs `np.linalg.solve`; logistic same minimizer as GD/sklearn; `e_{k+1}/e_k²` bounded; IRLS check.
 
 **Lab 3 — Damping & failure.** Damped Newton = `NewtonDirection` + `Armijo` (`α=1`). Double well from `x₀=0.3` (indefinite Hessian, saddle); remedy `H+τI`, `τ` doubled. Tests: strict decrease → `x=±1`; exception without damping.
 
-**Lab 4 — Regularizer, ridge for free.** `L2` (`value ½λ‖w‖²`, `gradient λw`, `prox w/(1+λt)`), `NoRegularizer`, `RegularizedObjective(loss, reg)`. Ridge = any optimizer on `RegularizedObjective(GLMLoss, L2)` — live OCP; tie to MAP (Gaussian prior). Tests: wrapped gradient/Hessian vs numerical; ridge Newton vs closed form.
+**Lab 4 — IRegularizer, ridge for free.** `L2` (`value ½λ‖w‖²`, `gradient λw`, `prox w/(1+λt)`), `NoRegularizer`, `RegularizedObjective(loss, reg)`. Ridge = any optimizer on `RegularizedObjective(GLMLoss, L2)` — live OCP; tie to MAP (Gaussian prior). Tests: wrapped gradient/Hessian vs numerical; ridge Newton vs closed form.
 
 **SOLID / NB / Plan B / Q.** O: Newton and ridge added with no edits. D: `NewtonDirection` receives its solver. NB: Newton log-log error; double-well field; ridge path. Plan B: ship the `cholesky` loop. Q: why not invert `H`? what does "Cholesky failed" mean geometrically **and** statistically?
 
@@ -350,12 +350,12 @@ optlab/
 ### Day 5 — Nonlinear least squares: Gauss–Newton and Levenberg–Marquardt
 **Headline.** Curve fitting: exploit the least-squares structure. Gauss–Newton approximates the Hessian by `JᵀJ`; Levenberg–Marquardt damps it — and LM *is* a trust-region method. Reuses Cholesky from Day 4.
 
-**Deliverable.** `LeastSquaresProblem` instances (`curve_fitting.py`); `GaussNewton`; `LevenbergMarquardt` (with the gain-ratio update).
+**Deliverable.** `ILeastSquaresProblem` instances (`curve_fitting.py`); `GaussNewton`; `LevenbergMarquardt` (with the gain-ratio update).
 
 | Time | Len | Activity |
 |---|---|---|
 | 0:00 | 40 | Lecture (incl. the trust-region naming) |
-| 0:55 | 45 | Lab 1: `LeastSquaresProblem` + Jacobian check |
+| 0:55 | 45 | Lab 1: `ILeastSquaresProblem` + Jacobian check |
 | 1:40 | 45 | Lab 2: Gauss–Newton |
 | 2:25 | 70 | Lab 3: Levenberg–Marquardt |
 | 3:35 | 20 | Debrief |
@@ -371,26 +371,26 @@ optlab/
 - Two near-equal exponential rates ⇒ near-singular `JᵀJ` ⇒ GN fails, LM robust.
 - **LM is not global**: `y=a·sin(ωt+φ)` with `ω` far off ⇒ converges to a *local* minimum. "Converged" ≠ "best".
 
-**Lab 1 — `LeastSquaresProblem` + Jacobian check (45 min).**
+**Lab 1 — `ILeastSquaresProblem` + Jacobian check (45 min).**
 ```python
-class ExpDecay:      # LeastSquaresProblem: residuals(x)=model(t;x)−y, jacobian(x)
+class ExpDecay:      # ILeastSquaresProblem: residuals(x)=model(t;x)−y, jacobian(x)
 class GaussianPeak:  # another instance
 ```
 Write `residuals` and analytic `jacobian`; validate `jacobian` with `numerical_jacobian` (Day 4, DRY). Tests: Jacobian vs numerical; residual/gradient consistency `g=Jᵀr` vs `check_gradient` on `½‖r‖²`.
 
 **Lab 2 — Gauss–Newton (45 min).**
 ```python
-class GaussNewton:   # Optimizer: minimize(problem, x0); __init__(linear_solver)
+class GaussNewton:   # IOptimizer: minimize(problem, x0); __init__(linear_solver)
 ```
 `δ = solve(JᵀJ, −Jᵀr)` via the **Day-4 `CholeskySolver`** (DIP — reused, not rewritten), then `x += δ` (optionally with Armijo on `½‖r‖²`). Tests: recover exact parameters on noiseless data (`1e-8`); converges from a good start; **diverges** from the hard start (documented failure).
 
 **Lab 3 — Levenberg–Marquardt (70 min).**
 ```python
-class LevenbergMarquardt:   # Optimizer: __init__(linear_solver, lambda0=1e-3, ...)
+class LevenbergMarquardt:   # IOptimizer: __init__(linear_solver, lambda0=1e-3, ...)
 ```
 Damped solve `(JᵀJ + λI)δ = −Jᵀr` (dense `+λI`), gain ratio `ρ`, accept/reject, update `λ`. Because `JᵀJ+λI` is SPD, Cholesky always succeeds. Tests: converges where GN failed (hard start); recovers parameters; matches `scipy.optimize.least_squares(method="lm")` (oracle); on NIST StRD, hits the certified values from the "hard" start.
 
-**SOLID of the day.** ISP: `LeastSquaresProblem` is its own interface (`residuals`, `jacobian`) — **not** an `Objective`; GN/LM ask only for what they need. DIP: both receive a `LinearSolver`; the Day-4 Cholesky is reused unchanged. O: GN and LM are new `Optimizer`s; nothing existing is edited. S: the problem models the data, the solver factorizes, the optimizer iterates.
+**SOLID of the day.** ISP: `ILeastSquaresProblem` is its own interface (`residuals`, `jacobian`) — **not** an `IObjective`; GN/LM ask only for what they need. DIP: both receive an `ILinearSolver`; the Day-4 Cholesky is reused unchanged. O: GN and LM are new `IOptimizer`s; nothing existing is edited. S: the problem models the data, the solver factorizes, the optimizer iterates.
 
 **Notebook 05 / Plan B / Q.** NB: GN vs LM trajectories on the fit; evolution of `λ` and `ρ`; residual curves. Plan B: if behind, do LM only (GN is the `λ=0` limit) and skip NIST. Q: why does GN drop the second Hessian term, and when is that dangerous? why is LM naturally compatible with Cholesky while GN is not? how does the gain ratio decide the step?
 
@@ -414,13 +414,13 @@ Damped solve `(JᵀJ + λI)δ = −Jᵀr` (dense `+λI`), gain ratio `ρ`, accep
 
 **Worked examples.** Soft-threshold at `v=(3,−0.4,0.1)`, `t=0.5` → `(2.5,0,0)`; 1-D lasso `½(w−3)²+λ|w|` → `w=soft(3,λ)` (`2.5` at `λ=0.5`, `0` at `λ≥3`); Huber vs squared under one gross outlier.
 
-**Lab 1 — Proximal gradient & lasso (65 min).** `L1` (`prox`=soft-threshold; `gradient` raises), `ElasticNet`; `ProximalGradient(smooth, reg, step)` (ISTA; FISTA optional). **Reuses `GLMLoss` unchanged**; lasso = `ProximalGradient(GLMLoss, L1)` (OCP). Tests: **`Regularizer` contract test** (prox identities); hand soft-threshold; vs scikit-learn `Lasso` (oracle); recover a known sparse `w*`; `L1.gradient` raises. Experiment: the **regularization path** on *diabetes*.
+**Lab 1 — Proximal gradient & lasso (65 min).** `L1` (`prox`=soft-threshold; `gradient` raises), `ElasticNet`; `ProximalGradient(smooth, reg, step)` (ISTA; FISTA optional). **Reuses `GLMLoss` unchanged**; lasso = `ProximalGradient(GLMLoss, L1)` (OCP). Tests: **`IRegularizer` contract test** (prox identities); hand soft-threshold; vs scikit-learn `Lasso` (oracle); recover a known sparse `w*`; `L1.gradient` raises. Experiment: the **regularization path** on *diabetes*.
 
-**Lab 2 — Huber & Poisson (40 min).** `Huber`, `PoissonNLL` as `PointwiseLoss` ⇒ GD/Newton work on them **for free** (OCP payoff). Tests: derivatives vs numerical; `Huber → least squares` as `δ→∞`; robust fit vs outlier; Poisson vs scikit-learn `PoissonRegressor`.
+**Lab 2 — Huber & Poisson (40 min).** `Huber`, `PoissonNLL` as `IPointwiseLoss` ⇒ GD/Newton work on them **for free** (OCP payoff). Tests: derivatives vs numerical; `Huber → least squares` as `δ→∞`; robust fit vs outlier; Poisson vs scikit-learn `PoissonRegressor`.
 
 **Lab 3 — Benchmark (40 min).** `benchmarks/run.py` → CSV → notebook 06. Problems: ill-conditioned quadratic, Rosenbrock, linear (raw California), logistic (breast cancer, digits), curve fit (NIST), lasso (diabetes), a large logistic for stochastic. Methods: GD+Armijo, momentum, SGD, Adam, Newton, ridge, GN, LM, lasso. Count iterations/epochs/evals/wall-clock/final loss vs oracles. **One-pager** "which optimizer for which problem?" (graded).
 
-**Lab 4 — Extensibility challenge (35 min).** Add one new implementation of an existing interface, **editing no existing `src/` file** (checked by `git diff`): `FISTA`, `GroupLasso` (block prox), `Nesterov` (`DirectionRule`), or `PoissonNLL` if not done. Justify any forced edit in `DESIGN.md`.
+**Lab 4 — Extensibility challenge (35 min).** Add one new implementation of an existing interface, **editing no existing `src/` file** (checked by `git diff`): `FISTA`, `GroupLasso` (block prox), `Nesterov` (`IDirectionRule`), or `PoissonNLL` if not done. Justify any forced edit in `DESIGN.md`.
 
 **Debrief — cross code review (20 min).** Checklist over a peer's repo: SRP, ISP, LSP (contract tests pass on all implementations?), OCP/DIP, DRY, tests, `mypy --strict`, error messages. Retrospective: which interface made an addition trivial; where the loss-as-likelihood view paid off.
 
@@ -451,7 +451,7 @@ Damped solve `(JᵀJ + λI)δ = −Jᵀr` (dense `+λI`), gain ratio `ρ`, accep
 
 **Risks & fallbacks.** Too much material → cut in order: FISTA/ElasticNet, Poisson, heavy-ball theory, then GN (keep LM as the `λ=0`-inclusive method); never the loss/MLE thread. Students behind → interfaces provided, pairs, one reference module on request. Fragile numeric tests → fixed seeds, calibrated tolerances. No network → environment + data in the clone. Day-3 dataset too big → ship a subsample.
 
-**Still cut: CG / PCG / sparse matrices.** The freed Week-2 day went to GN/LM, so CG/PCG did not fit — a real loss for large sparse systems, acknowledged. If a future edition finds room (a 7th day, or trimming the "plus" items), the clean insertion order is: sparse CSR → CG → Jacobi-preconditioned CG → Newton-CG. It slots in without editing existing code, because `NewtonDirection`, `GaussNewton`, and `LevenbergMarquardt` already depend on the abstract `LinearSolver`: a CG solver is simply another implementation, and Newton-CG is Newton with it injected.
+**Still cut: CG / PCG / sparse matrices.** The freed Week-2 day went to GN/LM, so CG/PCG did not fit — a real loss for large sparse systems, acknowledged. If a future edition finds room (a 7th day, or trimming the "plus" items), the clean insertion order is: sparse CSR → CG → Jacobi-preconditioned CG → Newton-CG. It slots in without editing existing code, because `NewtonDirection`, `GaussNewton`, and `LevenbergMarquardt` already depend on the abstract `ILinearSolver`: a CG solver is simply another implementation, and Newton-CG is Newton with it injected.
 
 ---
 

@@ -4,17 +4,17 @@ The exact Hessian is JᵀJ + Σ rᵢ∇²rᵢ. Gauss-Newton drops the second ter
 nothing to justify when the residuals are small or the model is nearly linear, and costs
 convergence when they are not.
 
-Both classes take a `LinearSolver` and both reuse the day-4 Cholesky unchanged.
+Both classes take an `ILinearSolver` and both reuse the day-4 Cholesky unchanged.
 """
 
 import numpy as np
 
-from ..interfaces import LeastSquaresProblem, LinearSolver, Observer, Optimizer
+from ..interfaces import ILeastSquaresProblem, ILinearSolver, IObserver, IOptimizer
 from ..results import OptimizeResult
 from ..types import Vec
 
 
-class GaussNewton(Optimizer):
+class GaussNewton(IOptimizer):
     """Solve (JᵀJ)δ = −Jᵀr, then x ← x + δ.
 
     Cheap — only first derivatives — and nearly quadratic when residuals are small. But
@@ -25,10 +25,10 @@ class GaussNewton(Optimizer):
 
     def __init__(
         self,
-        linear_solver: LinearSolver,
+        linear_solver: ILinearSolver,
         tol: float = 1e-8,
         max_iter: int = 100,
-        observers: list[Observer] | None = None,
+        observers: list[IObserver] | None = None,
     ) -> None:
         self.linear_solver = linear_solver
         self.tol = tol
@@ -36,11 +36,11 @@ class GaussNewton(Optimizer):
         self.observers = observers or []
 
     def minimize(self, objective: object, x0: Vec) -> OptimizeResult:
-        """Requires a `LeastSquaresProblem`."""
+        """Requires an `ILeastSquaresProblem`."""
         raise NotImplementedError("[DAY 5] lab 2")
 
 
-class LevenbergMarquardt(Optimizer):
+class LevenbergMarquardt(IOptimizer):
     """Solve (JᵀJ + λI)δ = −Jᵀr, adapting λ by the gain ratio.
 
     λ → 0 recovers Gauss-Newton; λ → ∞ gives a small gradient step. Since JᵀJ + λI is
@@ -61,13 +61,13 @@ class LevenbergMarquardt(Optimizer):
 
     def __init__(
         self,
-        linear_solver: LinearSolver,
+        linear_solver: ILinearSolver,
         lambda0: float = 1e-3,
         lambda_up: float = 10.0,
         lambda_down: float = 0.1,
         tol: float = 1e-8,
         max_iter: int = 200,
-        observers: list[Observer] | None = None,
+        observers: list[IObserver] | None = None,
     ) -> None:
         self.linear_solver = linear_solver
         self.lambda0 = lambda0
@@ -78,5 +78,5 @@ class LevenbergMarquardt(Optimizer):
         self.observers = observers or []
 
     def minimize(self, objective: object, x0: Vec) -> OptimizeResult:
-        """Requires a `LeastSquaresProblem`."""
+        """Requires an `ILeastSquaresProblem`."""
         raise NotImplementedError("[DAY 5] lab 3")

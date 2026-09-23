@@ -11,7 +11,7 @@ from .types import Vec
 
 @dataclass(frozen=True)
 class StepEvent:
-    """One iteration of an optimizer, handed to every `Observer` and `StoppingCriterion`.
+    """One iteration of an optimizer, handed to every `IObserver` and `IStoppingCriterion`.
 
     `step_size` is the length actually taken along `direction` (1.0 for methods that do
     not scale their step). `grad_norm` is the Euclidean norm of the gradient at `x`.
@@ -26,7 +26,7 @@ class StepEvent:
 
 @dataclass(frozen=True)
 class OptimizeResult:
-    """What every `Optimizer.minimize` returns.
+    """What every `IOptimizer.minimize` returns.
 
     `converged` is True only if a stopping criterion fired on a genuine convergence
     test. Hitting `MaxIterations`, or catching a `LineSearchFailed`, gives

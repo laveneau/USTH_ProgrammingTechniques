@@ -1,17 +1,17 @@
 """[DAY 5] Nonlinear least-squares problems for Gauss-Newton and Levenberg-Marquardt.
 
-These implement `LeastSquaresProblem`, not `Objective`: GN and LM need r and J
+These implement `ILeastSquaresProblem`, not `IObjective`: GN and LM need r and J
 separately. Write the analytic Jacobian, then validate it with `numerical_jacobian`
 from day 1 before you let an optimizer anywhere near it.
 """
 
 import numpy as np
 
-from ..interfaces import LeastSquaresProblem
+from ..interfaces import ILeastSquaresProblem
 from ..types import Mat, Vec
 
 
-class ExpDecay(LeastSquaresProblem):
+class ExpDecay(ILeastSquaresProblem):
     """y = a·exp(−b·t) + c, with parameters x = (a, b, c).
 
     The day's running example. From a good start Gauss-Newton converges in a handful of
@@ -33,7 +33,7 @@ class ExpDecay(LeastSquaresProblem):
         raise NotImplementedError("[DAY 5] lab 1")
 
 
-class GaussianPeak(LeastSquaresProblem):
+class GaussianPeak(ILeastSquaresProblem):
     """y = a·exp(−(t − mu)² / (2σ²)), with parameters x = (a, mu, sigma)."""
 
     def __init__(self, t: Vec, y: Vec) -> None:
@@ -47,7 +47,7 @@ class GaussianPeak(LeastSquaresProblem):
         raise NotImplementedError("[DAY 5] lab 1")
 
 
-class Sinusoid(LeastSquaresProblem):
+class Sinusoid(ILeastSquaresProblem):
     """y = a·sin(omega·t + phi), with parameters x = (a, omega, phi).
 
     The counterexample: start with omega far from the truth and LM converges neatly to a

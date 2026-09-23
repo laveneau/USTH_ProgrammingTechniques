@@ -19,7 +19,7 @@ Each week has its detailed plan:
 
 Week 1 is the prerequisite for Week 2. The Week 1 project — an **automatic differentiation** engine (forward mode with dual numbers, reverse mode = backpropagation) — is the hinge: it is where students first meet arithmetic operator overloading and `@dataclass`, and the module is carried into the Week 2 repository, where it serves as the **gradient oracle** that validates every hand-written gradient.
 
-The rest carries over too: interfaces are `ABC` + `@abstractmethod` exactly as in Week 1's Lecture 4; multiple inheritance from Lecture 1 reappears as `GLMLoss(Objective, TwiceDifferentiable, BatchObjective)`; and `make check` stays what it was -- `mypy --strict` plus the test suite, `unittest` in Week 1 and `pytest` in Week 2.
+The rest carries over too: interfaces are `ABC` + `@abstractmethod` exactly as in Week 1's Lecture 4; multiple inheritance from Lecture 1 reappears as `GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)`; and `make check` stays what it was -- `mypy --strict` plus the test suite, `unittest` in Week 1 and `pytest` in Week 2.
 
 ## Week structure
 

@@ -1,21 +1,21 @@
 """[DAY 3] Training on a sample of the gradient — how modern machine learning actually fits.
 
-These are their own `Optimizer`s rather than `DirectionRule`s: the loop is different
+These are their own `IOptimizer`s rather than `IDirectionRule`s: the loop is different
 (epochs, shuffling, no line search), so forcing them into `DescentOptimizer` would mean
 editing it. A new implementation of an existing interface is the open/closed answer.
 
-Both depend only on `BatchObjective`. Neither asks for a Hessian, a line search, or a
+Both depend only on `IBatchObjective`. Neither asks for a Hessian, a line search, or a
 full gradient.
 """
 
 import numpy as np
 
-from ..interfaces import BatchObjective, Observer, Optimizer, StoppingCriterion
+from ..interfaces import IBatchObjective, IObserver, IOptimizer, IStoppingCriterion
 from ..results import OptimizeResult, StepEvent
 from ..types import Vec
 
 
-class SGD(Optimizer):
+class SGD(IOptimizer):
     """Mini-batch stochastic gradient descent.
 
     The random generator is injected, never created inside: that is what makes a run
@@ -37,7 +37,7 @@ class SGD(Optimizer):
         momentum: float = 0.0,
         lr_decay: float = 0.0,
         rng: np.random.Generator | None = None,
-        observers: list[Observer] | None = None,
+        observers: list[IObserver] | None = None,
     ) -> None:
         self.batch_size = batch_size
         self.lr = lr
@@ -48,11 +48,11 @@ class SGD(Optimizer):
         self.observers = observers or []
 
     def minimize(self, objective: object, x0: Vec) -> OptimizeResult:
-        """Requires a `BatchObjective`."""
+        """Requires an `IBatchObjective`."""
         raise NotImplementedError("[DAY 3] lab 2")
 
 
-class Adam(Optimizer):
+class Adam(IOptimizer):
     """Adaptive moment estimation: a per-coordinate step size from the running moments.
 
     Keeps m (first moment) and v (second), both bias-corrected because they start at
@@ -74,7 +74,7 @@ class Adam(Optimizer):
         beta2: float = 0.999,
         eps: float = 1e-8,
         rng: np.random.Generator | None = None,
-        observers: list[Observer] | None = None,
+        observers: list[IObserver] | None = None,
     ) -> None:
         self.batch_size = batch_size
         self.lr = lr
@@ -86,5 +86,5 @@ class Adam(Optimizer):
         self.observers = observers or []
 
     def minimize(self, objective: object, x0: Vec) -> OptimizeResult:
-        """Requires a `BatchObjective`."""
+        """Requires an `IBatchObjective`."""
         raise NotImplementedError("[DAY 3] lab 3")

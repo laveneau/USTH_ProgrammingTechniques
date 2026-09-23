@@ -2,11 +2,11 @@
 
 import numpy as np
 
-from ..interfaces import Objective, TwiceDifferentiable
+from ..interfaces import IObjective, ITwiceDifferentiable
 from ..types import Mat, Vec
 
 
-class Rosenbrock(Objective, TwiceDifferentiable):
+class Rosenbrock(IObjective, ITwiceDifferentiable):
     """f(x) = Σ [100(x_{i+1} − x_i²)² + (1 − x_i)²], minimized at x = (1, …, 1).
 
     A curved valley: the floor is cheap to reach and then almost flat along a bend, so

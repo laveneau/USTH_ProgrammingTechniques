@@ -154,7 +154,7 @@ One behavior per test; arrange–act–assert; testing exceptions (`assertRaises
 | 3:15 | 20 | Debrief |
 
 #### Lecture (L4)
-**S** — Single Responsibility (before/after). **O** — Open/Closed. **L** — Liskov Substitution. **I** — Interface Segregation. **D** — Dependency Inversion. Then **TDD** (red → green → refactor), **DRY**, **KISS**, and **YAGNI** (don't add an abstraction until a concrete need exists — it pairs with KISS and OCP). Interfaces are expressed with `ABC` + `@abstractmethod`.
+**S** — Single Responsibility (before/after). **O** — Open/Closed. **L** — Liskov Substitution. **I** — Interface Segregation. **D** — Dependency Inversion. Then **TDD** (red → green → refactor), **DRY**, **KISS**, and **YAGNI** (don't add an abstraction until a concrete need exists — it pairs with KISS and OCP). Interfaces are expressed with `ABC` + `@abstractmethod`, and the lecture states the course's two interface conventions once, where `ABC` is introduced: an interface is named with a leading capital `I` (`IShape`, `INotification`, and all of Week 2's `optlab`), and an interface is **pure** -- every method abstract, no implementation, no state. A class carrying implementation is an abstract base class, keeps its plain name, and is not an interface.
 
 > Materials note: Lecture 4 covers all of SOLID/TDD/DRY/KISS **and** YAGNI, so it matches Labwork 4 (exercise 4), which ends on a `# YAGNI` payoff line.
 
@@ -275,7 +275,7 @@ Gradients of `½‖Xw − y‖²` (vs the hand formula `Xᵀ(Xw − y)`) and of 
 
 The autodiff module, the project scaffold, and the five SOLID muscles carry directly into Week 2 (Optimization):
 - **Interfaces** are `ABC`s, exactly as in Labworks 3–4.
-- **Multiple inheritance** (Unit 1) reappears as `GLMLoss(Objective, TwiceDifferentiable, BatchObjective)`.
+- **Multiple inheritance** (Unit 1) reappears as `GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)`.
 - **`mypy --strict` + a test suite** are the same `make check` -- the runner changes from `unittest` to `pytest`, which Lecture 3 covers, the habit does not.
 - **The autodiff engine** becomes the gradient oracle that validates every hand-written gradient in Week 2.
 

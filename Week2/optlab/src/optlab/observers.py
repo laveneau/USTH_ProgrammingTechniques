@@ -1,10 +1,10 @@
 """[DAY 2] Watching the loop without changing it."""
 
-from .interfaces import Observer
+from .interfaces import IObserver
 from .results import StepEvent
 
 
-class History(Observer):
+class History(IObserver):
     """Records every `StepEvent`, for the convergence plots and the rate checks.
 
     Recording is separate from iterating: the optimizer does not know whether anyone is

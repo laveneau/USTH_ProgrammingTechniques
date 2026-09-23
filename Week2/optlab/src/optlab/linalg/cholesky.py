@@ -12,7 +12,7 @@ and the parameters are not identified from the data.
 import numpy as np
 
 from ..errors import NotPositiveDefiniteError
-from ..interfaces import LinearSolver
+from ..interfaces import ILinearSolver
 from ..types import Mat, Vec
 
 
@@ -35,7 +35,7 @@ def solve_upper_from_lower(L: Mat, y: Vec) -> Vec:
     raise NotImplementedError("[DAY 4] lab 1")
 
 
-class CholeskySolver(LinearSolver):
+class CholeskySolver(ILinearSolver):
     """Solves A x = b for symmetric positive definite A, via A = LLᵀ.
 
     Written once on day 4, then injected unchanged into `NewtonDirection`,

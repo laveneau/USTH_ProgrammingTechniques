@@ -3,25 +3,25 @@
 import numpy as np
 
 from ..errors import NotPositiveDefiniteError
-from ..interfaces import DirectionRule, LinearSolver, Objective
+from ..interfaces import IDirectionRule, ILinearSolver, IObjective
 from ..types import Vec
 
 
-class SteepestDescent(DirectionRule):
+class SteepestDescent(IDirectionRule):
     """[DAY 2] d = −g. The obvious choice, and the slow one on an ill-conditioned problem.
 
     On a quadratic with condition number κ the error contracts by (κ−1)/(κ+1) per step:
     about 690 iterations for ½(x₁² + 100x₂²) where momentum needs 70 and Newton needs 1.
     """
 
-    def direction(self, objective: Objective, x: Vec, g: Vec) -> Vec:
+    def direction(self, objective: IObjective, x: Vec, g: Vec) -> Vec:
         raise NotImplementedError("[DAY 2] lab 1")
 
 
-class HeavyBall(DirectionRule):
+class HeavyBall(IDirectionRule):
     """[DAY 2] d = −g + beta·(previous step). Polyak momentum.
 
-    Stateful: it remembers the last direction, which is why a `DirectionRule` is an
+    Stateful: it remembers the last direction, which is why an `IDirectionRule` is an
     object and not a function. Improves the rate to (√κ−1)/(√κ+1) — a square root, which
     on κ = 10⁴ is the difference between 10⁴ and 10² iterations.
     """
@@ -30,14 +30,14 @@ class HeavyBall(DirectionRule):
         self.beta = beta
         self._previous: Vec | None = None
 
-    def direction(self, objective: Objective, x: Vec, g: Vec) -> Vec:
+    def direction(self, objective: IObjective, x: Vec, g: Vec) -> Vec:
         raise NotImplementedError("[DAY 2] lab 3")
 
 
-class NewtonDirection(DirectionRule):
+class NewtonDirection(IDirectionRule):
     """[DAY 4] Solve H d = −g for the Newton direction.
 
-    The objective must be `TwiceDifferentiable`. Receives its `LinearSolver` by
+    The objective must be `ITwiceDifferentiable`. Receives its `ILinearSolver` by
     constructor rather than calling Cholesky directly — so the same class becomes
     Newton-CG the day someone writes a conjugate-gradient solver, with no edit here.
 
@@ -46,14 +46,14 @@ class NewtonDirection(DirectionRule):
     Day 4 lab 3 adds the damping H + τI that deals with it.
     """
 
-    def __init__(self, linear_solver: LinearSolver) -> None:
+    def __init__(self, linear_solver: ILinearSolver) -> None:
         self.linear_solver = linear_solver
 
-    def direction(self, objective: Objective, x: Vec, g: Vec) -> Vec:
+    def direction(self, objective: IObjective, x: Vec, g: Vec) -> Vec:
         raise NotImplementedError("[DAY 4] lab 2")
 
 
-class ModifiedNewton(DirectionRule):
+class ModifiedNewton(IDirectionRule):
     """[DAY 4] Newton with the damping H + τI that makes an indefinite Hessian usable.
 
     `NewtonDirection` propagates `NotPositiveDefiniteError` because an indefinite Hessian
@@ -76,7 +76,7 @@ class ModifiedNewton(DirectionRule):
 
     def __init__(
         self,
-        linear_solver: LinearSolver,
+        linear_solver: ILinearSolver,
         tau0: float = 1e-3,
         tau_max: float = 1e12,
     ) -> None:
@@ -84,5 +84,5 @@ class ModifiedNewton(DirectionRule):
         self.tau0 = tau0
         self.tau_max = tau_max
 
-    def direction(self, objective: Objective, x: Vec, g: Vec) -> Vec:
+    def direction(self, objective: IObjective, x: Vec, g: Vec) -> Vec:
         raise NotImplementedError("[DAY 4] lab 3")

@@ -8,7 +8,7 @@ For each non-obvious choice you make, one short entry: what you chose, what you
 rejected, and why. Two or three sentences each.
 
 > Example (day 2) — *`History` stores a list of `StepEvent` rather than parallel lists
-> of values and gradient norms. A `StepEvent` is already the unit the `Observer`
+> of values and gradient norms. A `StepEvent` is already the unit the `IObserver`
 > interface hands over, so unpacking it into parallel arrays would duplicate its shape
 > in a second place and break whenever a field is added.*
 

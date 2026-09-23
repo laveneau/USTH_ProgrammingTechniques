@@ -1,10 +1,10 @@
 """[DAY 2] When the loop ends."""
 
-from .interfaces import StoppingCriterion
+from .interfaces import IStoppingCriterion
 from .results import StepEvent
 
 
-class GradientNormBelow(StoppingCriterion):
+class GradientNormBelow(IStoppingCriterion):
     """Stop once ‖∇f‖ <= tol. The only criterion here that means genuine convergence."""
 
     def __init__(self, tol: float = 1e-6) -> None:
@@ -14,7 +14,7 @@ class GradientNormBelow(StoppingCriterion):
         raise NotImplementedError("[DAY 2] lab 1")
 
 
-class MaxIterations(StoppingCriterion):
+class MaxIterations(IStoppingCriterion):
     """Stop after a budget. Firing this means `converged=False`, not success."""
 
     def __init__(self, max_iter: int = 1000) -> None:
@@ -24,14 +24,14 @@ class MaxIterations(StoppingCriterion):
         raise NotImplementedError("[DAY 2] lab 1")
 
 
-class AnyOf(StoppingCriterion):
+class AnyOf(IStoppingCriterion):
     """Stop as soon as any of the wrapped criteria fires.
 
-    A composite, so the loop still sees exactly one `StoppingCriterion` no matter how
+    A composite, so the loop still sees exactly one `IStoppingCriterion` no matter how
     many conditions you combine.
     """
 
-    def __init__(self, *criteria: StoppingCriterion) -> None:
+    def __init__(self, *criteria: IStoppingCriterion) -> None:
         self.criteria = criteria
 
     def should_stop(self, event: StepEvent) -> bool:

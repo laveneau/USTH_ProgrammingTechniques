@@ -7,11 +7,11 @@ Huber is not a likelihood but a robustification of the Gaussian one.
 
 import numpy as np
 
-from .interfaces import PointwiseLoss
+from .interfaces import IPointwiseLoss
 from .types import Vec
 
 
-class SquaredError(PointwiseLoss):
+class SquaredError(IPointwiseLoss):
     """[DAY 1] φ(z, y) = ½(z − y)². The Gaussian negative log-likelihood."""
 
     def value(self, z: Vec, y: Vec) -> Vec:
@@ -24,7 +24,7 @@ class SquaredError(PointwiseLoss):
         raise NotImplementedError("[DAY 1] lab 2")
 
 
-class LogisticNLL(PointwiseLoss):
+class LogisticNLL(IPointwiseLoss):
     """[DAY 1] φ(z, y) = log(1 + e^z) − y·z, for y ∈ {0, 1}.
 
     Watch the overflow: `log(1 + exp(1000))` is `inf` computed naively and `1000`
@@ -42,7 +42,7 @@ class LogisticNLL(PointwiseLoss):
         raise NotImplementedError("[DAY 1] lab 2")
 
 
-class Huber(PointwiseLoss):
+class Huber(IPointwiseLoss):
     """[DAY 6] Quadratic near zero, linear beyond `delta`.
 
     Bounded influence, so a gross outlier cannot dominate the fit — yet still smooth,
@@ -65,10 +65,10 @@ class Huber(PointwiseLoss):
         raise NotImplementedError("[DAY 6] lab 2")
 
 
-class PoissonNLL(PointwiseLoss):
+class PoissonNLL(IPointwiseLoss):
     """[DAY 6] φ(z, y) = e^z − y·z. Counts with a log link.
 
-    Writing this is the payoff of the open/closed principle: it is a new `PointwiseLoss`,
+    Writing this is the payoff of the open/closed principle: it is a new `IPointwiseLoss`,
     so gradient descent, Newton and ridge all work on it without a line changing anywhere
     else.
     """

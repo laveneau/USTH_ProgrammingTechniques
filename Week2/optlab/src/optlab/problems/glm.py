@@ -1,31 +1,31 @@
 """The generalized linear model loss: one class for every GLM.
 
-`GLMLoss` does not know which likelihood it is fitting — it receives a `PointwiseLoss`
+`GLMLoss` does not know which likelihood it is fitting — it receives an `IPointwiseLoss`
 and composes with it. Linear regression, logistic regression, Poisson regression and
 robust regression are all this one class with a different object injected. That is
 dependency inversion, and it is why day 6 gets Poisson and Huber almost for free.
 
 There is deliberately no `lambda` parameter here. Regularization is a separate object
-(`Regularizer`, day 4) wrapped around this one by `RegularizedObjective` — a penalty is
+(`IRegularizer`, day 4) wrapped around this one by `RegularizedObjective` — a penalty is
 not part of the likelihood.
 """
 
 import numpy as np
 
-from ..interfaces import BatchObjective, Objective, PointwiseLoss, TwiceDifferentiable
+from ..interfaces import IBatchObjective, IObjective, IPointwiseLoss, ITwiceDifferentiable
 from ..losses import LogisticNLL, SquaredError
 from ..types import Index, Mat, Vec
 
 
-class GLMLoss(Objective, TwiceDifferentiable, BatchObjective):
+class GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective):
     """L(w) = (1/n) Σ φ(xᵢᵀw, yᵢ) for an injected pointwise loss φ.
 
     Three interfaces at once — the multiple inheritance of Week 1, Unit 1. Each caller
-    sees only the one it needs: the descent loop an `Objective`, `SGD` a
-    `BatchObjective`, `NewtonDirection` a `TwiceDifferentiable`.
+    sees only the one it needs: the descent loop an `IObjective`, `SGD` a
+    `IBatchObjective`, `NewtonDirection` an `ITwiceDifferentiable`.
     """
 
-    def __init__(self, X: Mat, y: Vec, pointwise: PointwiseLoss) -> None:
+    def __init__(self, X: Mat, y: Vec, pointwise: IPointwiseLoss) -> None:
         self.X = X
         self.y = y
         self.pointwise = pointwise

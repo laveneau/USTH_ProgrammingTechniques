@@ -1,9 +1,9 @@
-"""Every `PointwiseLoss` must have consistent derivatives, whatever the likelihood."""
+"""Every `IPointwiseLoss` must have consistent derivatives, whatever the likelihood."""
 
 import numpy as np
 import pytest
 
-from optlab.interfaces import PointwiseLoss
+from optlab.interfaces import IPointwiseLoss
 from optlab.losses import Huber, LogisticNLL, PoissonNLL, SquaredError
 
 SMOOTH = [("squared", SquaredError()), ("logistic", LogisticNLL())]
@@ -17,7 +17,7 @@ def _numeric_d(f, z: np.ndarray, y: np.ndarray, h: float = 1e-6) -> np.ndarray:
 @pytest.mark.contract
 @pytest.mark.day1
 @pytest.mark.parametrize("name,loss", SMOOTH, ids=[n for n, _ in SMOOTH])
-def test_d1_is_the_derivative_of_value(name: str, loss: PointwiseLoss) -> None:
+def test_d1_is_the_derivative_of_value(name: str, loss: IPointwiseLoss) -> None:
     z = np.array([-2.0, -0.5, 0.0, 0.5, 2.0])
     y = np.array([0.0, 1.0, 0.0, 1.0, 0.0])
     np.testing.assert_allclose(loss.d1(z, y), _numeric_d(loss.value, z, y), rtol=1e-5, atol=1e-7)
@@ -26,7 +26,7 @@ def test_d1_is_the_derivative_of_value(name: str, loss: PointwiseLoss) -> None:
 @pytest.mark.contract
 @pytest.mark.day1
 @pytest.mark.parametrize("name,loss", SMOOTH, ids=[n for n, _ in SMOOTH])
-def test_d2_is_the_derivative_of_d1(name: str, loss: PointwiseLoss) -> None:
+def test_d2_is_the_derivative_of_d1(name: str, loss: IPointwiseLoss) -> None:
     z = np.array([-2.0, -0.5, 0.0, 0.5, 2.0])
     y = np.array([0.0, 1.0, 0.0, 1.0, 0.0])
     np.testing.assert_allclose(loss.d2(z, y), _numeric_d(loss.d1, z, y), rtol=1e-5, atol=1e-7)
@@ -35,7 +35,7 @@ def test_d2_is_the_derivative_of_d1(name: str, loss: PointwiseLoss) -> None:
 @pytest.mark.contract
 @pytest.mark.day1
 @pytest.mark.parametrize("name,loss", SMOOTH, ids=[n for n, _ in SMOOTH])
-def test_d2_is_non_negative(name: str, loss: PointwiseLoss) -> None:
+def test_d2_is_non_negative(name: str, loss: IPointwiseLoss) -> None:
     """These losses are convex in z, so the second derivative cannot be negative."""
     z = np.linspace(-5, 5, 41)
     y = np.zeros_like(z)
@@ -45,7 +45,7 @@ def test_d2_is_non_negative(name: str, loss: PointwiseLoss) -> None:
 @pytest.mark.contract
 @pytest.mark.day6
 @pytest.mark.parametrize("name,loss", DAY6, ids=[n for n, _ in DAY6])
-def test_day6_losses_satisfy_the_same_contract(name: str, loss: PointwiseLoss) -> None:
+def test_day6_losses_satisfy_the_same_contract(name: str, loss: IPointwiseLoss) -> None:
     """Written on day 6, held to the day-1 contract without a line of it changing."""
     z = np.array([-2.0, -0.5, 0.0, 0.5, 2.0])
     y = np.array([0.0, 1.0, 0.0, 2.0, 1.0])
