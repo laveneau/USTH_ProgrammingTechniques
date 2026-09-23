@@ -16,10 +16,11 @@ Read `Lecture5-autodiff.ipynb` first.
 ```bash
 git clone <this repository> autodiff-lab
 cd autodiff-lab
-python -m pip install mypy          # the tests only need the standard library
+python3 -m pip install mypy          # the tests only need the standard library
 ```
 
-Python ≥ 3.10.
+Python >= 3.10. All the commands below use `python3`; if your Python is called
+`python`, use that instead (and `make ... PYTHON=python`).
 
 ## Layout
 
@@ -51,9 +52,9 @@ Work **test by test** (red → green): read a failing test, make it pass, commit
 Without `make`:
 
 ```bash
-python -m unittest -v tests/test_dual.py        # one part
-python -m unittest discover -s tests            # everything
-mypy --strict autodiff                          # typing
+python3 -m unittest -v tests/test_dual.py        # one part
+python3 -m unittest discover -s tests            # everything
+python3 -m mypy --strict autodiff                          # typing
 ```
 
 The suite is written with `unittest`, so nothing has to be installed. If you have
@@ -61,8 +62,8 @@ The suite is written with `unittest`, so nothing has to be installed. If you hav
 tests unchanged and gives you nicer failure messages:
 
 ```bash
-python -m pytest                                # everything
-python -m pytest tests/test_dual.py -x          # one part, stop at the first failure
+python3 -m pytest                                # everything
+python3 -m pytest tests/test_dual.py -x          # one part, stop at the first failure
 ```
 
 ## Done when

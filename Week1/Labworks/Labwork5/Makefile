@@ -1,4 +1,7 @@
-PYTHON ?= python
+# On macOS and most Linux distributions the command is python3; `python` often
+# does not exist at all. Override it if yours is named differently:
+#     make check PYTHON=python
+PYTHON ?= python3
 
 .PHONY: test part1 part2 part3 typecheck check clean
 
@@ -15,7 +18,7 @@ part3:           ## gradients of functions of several variables
 	$(PYTHON) -m unittest -v tests/test_gradient.py
 
 typecheck:       ## static typing
-	mypy --strict autodiff
+	$(PYTHON) -m mypy --strict autodiff
 
 check: test typecheck   ## everything that must be green before you submit
 
