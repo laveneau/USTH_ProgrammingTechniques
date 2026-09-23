@@ -166,3 +166,11 @@ cython_debug/
 
 # for code (e.g. MyPi...)
 .dummy/
+
+# for macos
+.DS_Store/
+
+# for ai... 
+.claude/
+.chatgpt/
+.vibe/
