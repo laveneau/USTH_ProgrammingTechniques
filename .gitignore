@@ -168,7 +168,8 @@ cython_debug/
 .dummy/
 
 # for macos
-.DS_Store/
+.DS_Store
+**/.DS_Store
 
 # for ai... 
 .claude/
