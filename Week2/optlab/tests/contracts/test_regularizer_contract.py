@@ -47,8 +47,19 @@ def test_non_smooth_prox_minimizes_its_defining_objective(
 
 @pytest.mark.contract
 @pytest.mark.day4
-@pytest.mark.parametrize("name,reg", DAY4 + DAY6, ids=[n for n, _ in DAY4 + DAY6])
+@pytest.mark.parametrize("name,reg", DAY4, ids=[n for n, _ in DAY4])
 def test_prox_with_t_zero_is_the_identity(name: str, reg: IRegularizer) -> None:
+    v = np.array([3.0, -0.4, 0.1, 0.0])
+    np.testing.assert_allclose(reg.prox(v, 0.0), v, rtol=1e-12, atol=1e-14)
+
+
+@pytest.mark.contract
+@pytest.mark.day6
+@pytest.mark.parametrize("name,reg", DAY6, ids=[n for n, _ in DAY6])
+def test_non_smooth_prox_with_t_zero_is_the_identity(name: str, reg: IRegularizer) -> None:
+    """Split from the day-4 case on purpose: `prox` at t = 0 is the identity for every
+    regularizer, but `L1` and `ElasticNet` are not written until day 6, and a day-4
+    student must be able to make `-m day4` green with day-4 work alone."""
     v = np.array([3.0, -0.4, 0.1, 0.0])
     np.testing.assert_allclose(reg.prox(v, 0.0), v, rtol=1e-12, atol=1e-14)
 
