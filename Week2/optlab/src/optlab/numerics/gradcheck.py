@@ -1,8 +1,8 @@
 """[DAY 1] Finite-difference derivatives, used to verify every gradient you write.
 
-Your Week 1 autodiff module is the second, independent oracle: finite differences catch
-sign and scale errors, autodiff catches them to machine precision. Disagreement between
-the two is always worth reading carefully.
+`optlab.autodiff` is the second, independent oracle: finite differences catch sign and
+scale errors and stop at about six correct digits, autodiff has no step size and is exact
+to machine precision. Disagreement between the two is always worth reading carefully.
 """
 
 from collections.abc import Callable

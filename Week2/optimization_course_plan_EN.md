@@ -19,23 +19,29 @@ This document covers **Week 2 (25 h): optimization**. For the two-week course st
 | **`@dataclass`** | known | introduced in the Week 1 project (for `Dual`); reused here for `OptimizeResult`, `StepEvent` |
 | **numpy** | barely seen (one Week-1 lab) | **short numpy ramp on Week 2 - Day 1** |
 
-Week-2 arc: **losses (MLE) -> gradient descent -> stochastic training -> second-order & statistics -> nonlinear least squares (GN/LM) -> regularization & sparsity.** Autodiff (Week 1) underlies all of it.
+Week-2 arc: **losses (MLE) -> gradient descent -> stochastic training -> second-order & statistics -> nonlinear least squares (GN/LM) -> regularization & sparsity.** Automatic differentiation, generalized from Week 1 to arrays, is the exact oracle underneath all of it.
 
 ---
 
-## A. What arrives from Week 1: the `autodiff` module
+## A. What arrives from Week 1, and what Week 2 provides
 
 Week 1 closes with an **automatic differentiation** project - the bridge into this week. It is specified in full in `Week1/course_plan_week1_EN.md` (section "Project"); only what Week 2 depends on is restated here.
 
-**What students bring in.** A working `autodiff` package, carried into the `optlab` repository as `src/optlab/autodiff/`:
+**What students bring in.** A working `autodiff` package over **single numbers**: `Dual` (forward mode) and `Var` (reverse mode), with `derivative`, `gradient_forward` and `gradient_reverse`. Nothing in Week 2 requires it, and it is not copied into `optlab`; a student who did not finish Week 1 is not blocked.
+
+**What Week 2 provides.** `src/optlab/autodiff/` is **provided code**, not student work: the same design generalized from numbers to numpy arrays, which is what `optlab` speaks.
 
 | Module | Contents | Mode |
 |---|---|---|
-| `autodiff/dual.py` | `Dual(val, der)` with full operator overloading, `exp`, `log`, `derivative(f, x)`, `gradient_forward(f, x)` | forward - `n` sweeps for a gradient |
-| `autodiff/tensor.py` | `Tensor` with `+ - * / ** @ sum T exp log` and `backward()` | reverse (= backprop) - `O(1)` sweeps for a scalar gradient |
-| - | `autodiff_gradient(f)` | the entry point used here |
+| `autodiff/tensor.py` | `Tensor` with `+ - * / ** @ [] sum mean exp log sin cos` and `backward()`; `autodiff_gradient(f)` | reverse (= backprop) - one sweep for a whole gradient |
+| `autodiff/dual.py` | `Dual(val, der)` over arrays; `derivative`, `gradient_forward`, `jacobian_forward` | forward - `n` sweeps, one per input coordinate |
+| `autodiff/functions.py` | `exp`, `log`, `sin`, `cos`, valid in either mode | - |
 
-**How Week 2 uses it.** As a **gradient oracle**: from Day 1, every hand-written `gradient` is validated against `autodiff_gradient` alongside the finite-difference `check_gradient`. Two independent oracles catch different mistakes - finite differences catch sign and scale errors, autodiff catches them exactly to machine precision.
+Three things had to change going from numbers to arrays, and `tensor.py` names them: an edge of the graph carries a **vector-Jacobian product** rather than a local derivative (forced by `@`), broadcasting must be **undone** on the way back, and a **reduction** turns arrays into the single number a loss is. The graph, the topological walk and the chain rule are unchanged from Week 1.
+
+**How Week 2 uses it.** As a **gradient oracle** in `tests/`, never in `src/optlab/`: `tests/unit/test_day1_autodiff_oracle.py` checks the squared-error, logistic and Poisson gradients against it, and asserts that it is sharper than finite differences. Two oracles catch different mistakes - finite differences find sign and scale errors and bottom out near `1e-11`, autodiff has no step size and no floor. Day 5 uses the forward mode instead, where three parameters and many residuals make `jacobian_forward` the right shape.
+
+**Where Week 1's own module is used.** Day 1's labwork asks students to read `tensor.py` against their own `var.py`, confirm the two agree to `1e-16` on a scalar function, and explain why they are not interchangeable (one graph node per number against one per array). That is the only place it appears, and it is a check on Week 1 rather than a dependency of Week 2.
 
 **Two skills it establishes**, both first met there and assumed here: **arithmetic operator overloading** (the dunders `__add__`, `__mul__`, ...) and **`@dataclass`** - the latter reused immediately for the provided `OptimizeResult` and `StepEvent`.
 
@@ -54,13 +60,13 @@ Spirit (Knuth): you understand an algorithm once you have written it, broken it,
 Each day serves both goals: **programming** (extend a clean, typed, tested, SOLID API by implementing provided interfaces) and **data science** (understand *why* a model is fit the way it is - the loss as a likelihood, conditioning as a data property, stochastic gradients as the answer to "too much data", regularization as a prior, GN/LM as the workhorse of curve fitting).
 
 ### Through-line
-`optlab`, **pure SOLID**: interfaces provided on day 1, implementations written day by day. The repo is cloned once; the same code grows. The Week-1 `autodiff` module is carried into the repo and used as a gradient oracle.
+`optlab`, **pure SOLID**: interfaces provided on day 1, implementations written day by day. The repo is cloned once; the same code grows. An array-capable `autodiff` module is provided in the repo and used as a gradient oracle in the tests.
 
 ### Ground rules
 | Component | Status |
 |---|---|
 | `numpy` | **Floor**: arrays, `@`, dense linear algebra. Only import allowed in `src/optlab/` |
-| `optlab.autodiff` | **Available** (built Week 1): used as a gradient oracle in tests |
+| `optlab.autodiff` | **Provided**: array-capable forward and reverse mode, used as a gradient oracle in tests |
 | `scipy`, `scikit-learn` | **Oracles**: tests/benchmarks only, never in the package |
 | Everything else | **Written by the students**: losses, Cholesky, all optimizers, proximal operators, GN/LM |
 
@@ -126,7 +132,7 @@ notebook, because the architecture *is* the subject this week.
 One headline theme per day; <= 3 new interfaces per day in depth; **lecture <= 45 min**; every lab ends on something that runs and passes.
 
 ### Repository: clone once, then no network
-Everything is in the clone (architecture, six days of skeletons, all tests, notebooks, data, and the Week-1 `autodiff` module). No `git pull` afterwards. Single `main`, no per-day tags. `make test DAY=n` runs days 1-n; `make check` adds `mypy --strict`, `ruff`, "no scipy in `src/`". Visible tests provided; hidden tests for grading. Environment prepared in advance (Docker / conda / wheels). A stuck student never blocks the rest (interfaces provided; pairs; one reference module on request).
+Everything is in the clone (architecture, six days of skeletons, all tests, notebooks, data, and the provided `autodiff` module). No `git pull` afterwards. Single `main`, no per-day tags. `make test DAY=n` runs days 1-n; `make check` adds `mypy --strict`, `ruff`, "no scipy in `src/`". Visible tests provided; hidden tests for grading. Environment prepared in advance (Docker / conda / wheels). A stuck student never blocks the rest (interfaces provided; pairs; one reference module on request).
 
 ### Real data (prepared once by the instructor)
 `datasets/prepare.py` (before the course) writes `data/*.npz`; `datasets/load.py` (numpy only, outside `src/`) reads them.
@@ -147,7 +153,7 @@ We do optimization, not "ML": accuracy is a sanity check; the real check is agre
 
 ## 3. SOLID architecture: interfaces provided, implementations to write
 
-All interfaces are shipped whole in `interfaces.py` as **abstract base classes** (`ABC` + `@abstractmethod`), exactly the mechanism Week 1 uses for SOLID (Lecture 4, Labwork 3-4), and following the two conventions stated there: each is named with a leading capital `I`, and each is **pure** - every method abstract, no implementation and no state, so every line of behaviour behind a contract is written by the student. Students write **implementations** that inherit them, and never edit an interface. An implementation may inherit **several** ABCs (e.g. `GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)`) - a direct use of the multiple inheritance seen in Lecture 1. Structurally these are the "duck-typed" contracts of Lecture 2; `Protocol` is the structural-typing twin, mentioned once and not required. The Week-1 `autodiff` module is present and used as a gradient oracle.
+All interfaces are shipped whole in `interfaces.py` as **abstract base classes** (`ABC` + `@abstractmethod`), exactly the mechanism Week 1 uses for SOLID (Lecture 4, Labwork 3-4), and following the two conventions stated there: each is named with a leading capital `I`, and each is **pure** - every method abstract, no implementation and no state, so every line of behaviour behind a contract is written by the student. Students write **implementations** that inherit them, and never edit an interface. An implementation may inherit **several** ABCs (e.g. `GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)`) - a direct use of the multiple inheritance seen in Lecture 1. Structurally these are the "duck-typed" contracts of Lecture 2; `Protocol` is the structural-typing twin, mentioned once and not required. The provided `autodiff` module is used as a gradient oracle in the tests.
 
 ### The interfaces (abstract base classes)
 | Interface | Methods | Implementations to write | Day | Depended on by |
@@ -204,7 +210,7 @@ optlab/
 +-- src/optlab/
 |   +-- types.py - interfaces.py(PROVIDED: ABCs) - errors.py(PROVIDED) - results.py(PROVIDED)
 |   +-- numerics/gradcheck.py          # D1 numerical_gradient/jacobian, check_gradient
-|   +-- autodiff/{dual.py,tensor.py}   # from Week 1 (oracle)
+|   +-- autodiff/                      # PROVIDED array autodiff (oracle)
 |   +-- losses.py                      # D1 SquaredError, LogisticNLL - D6 Huber, PoissonNLL
 |   +-- problems/
 |   |   +-- glm.py                     # D1 GLMLoss (value, gradient) - D4 hessian
@@ -230,7 +236,7 @@ optlab/
 ---
 
 ### Day 1 - Losses, likelihood, and the optimization problem
-**Headline.** A model is a loss; a loss is a negative log-likelihood. Set up the problem, verify a gradient (finite differences **and** the Week-1 autodiff), implement the first losses.
+**Headline.** A model is a loss; a loss is a negative log-likelihood. Set up the problem, verify a gradient (finite differences **and** the provided autodiff), implement the first losses.
 
 **Deliverable.** `numerics/gradcheck.py`; `losses.py` (`SquaredError`, `LogisticNLL`); `GLMLoss.value/gradient`; `Quadratic`, `Rosenbrock`.
 
@@ -239,7 +245,7 @@ optlab/
 | 0:00 | 40 | Lecture |
 | 0:55 | 25 | Setup + guided tour of the architecture (the ABCs) |
 | 1:20 | 25 | Lab 0: **numpy ramp** (arrays, broadcasting, `@`, `np.linalg`) |
-| 1:45 | 35 | Lab 1: gradient check (FD + autodiff oracle) |
+| 1:45 | 40 | Lab 1: gradient check (FD + autodiff oracle) |
 | 2:20 | 55 | Lab 2: `IPointwiseLoss` + `GLMLoss` |
 | 3:15 | 20 | Lab 3: conditioning & the data |
 | 3:35 | 20 | Debrief |
@@ -250,9 +256,9 @@ optlab/
 
 **Lab 0 - numpy ramp (25 min).** A guided, test-backed warm-up, since numpy was barely seen in Week 1: vectors/matrices, `reshape`, broadcasting rules, `@` vs `*`, reductions (`sum`, `mean`, `axis`), `np.linalg.solve`/`eigvalsh`. Small provided tests (e.g. "compute `X^T(Xw-y)` without a Python loop") calibrate the level. Everything afterwards assumes this fluency.
 
-**Lab 1 - Gradient check.** `numerical_gradient`, `check_gradient`; also compare to the Week-1 `autodiff_gradient` as a second oracle. Tests incl. a deliberately wrong gradient; error-vs-`h` U-curve.
+**Lab 1 - Gradient check.** `numerical_gradient`, `check_gradient`; also plot the provided `autodiff_gradient` on the same axes - a flat line near machine precision, five orders below the bottom of the U. Tests incl. a deliberately wrong gradient; error-vs-`h` U-curve.
 
-**Lab 2 - Losses and `GLMLoss`.** `SquaredError`, `LogisticNLL` (`IPointwiseLoss`); `GLMLoss(X, y, pointwise)` (value = mean of phi; gradient = `X^T*d1/n`); `linear_regression`, `logistic_regression` assemblies; `Quadratic`, `Rosenbrock`. **One class for all GLMs** (DRY/SRP), receiving the pointwise loss (DIP); **no `lam` yet** (regularizer is separate, D4). Tests: pointwise derivatives vs numerical; `GLMLoss.gradient` via `check_gradient` **and** autodiff; hand values; `IObjective` contract test over all four. Oracle: ridge closed form; logistic vs scikit-learn later.
+**Lab 2 - Losses and `GLMLoss`.** `SquaredError`, `LogisticNLL` (`IPointwiseLoss`); `GLMLoss(X, y, pointwise)` (value = mean of phi; gradient = `X^T*d1/n`); `linear_regression`, `logistic_regression` assemblies; `Quadratic`, `Rosenbrock`. **One class for all GLMs** (DRY/SRP), receiving the pointwise loss (DIP); **no `lam` yet** (regularizer is separate, D4). Tests: pointwise derivatives vs numerical; `GLMLoss.gradient` via `check_gradient` **and** `autodiff_gradient` (`test_day1_autodiff_oracle.py`, all three likelihoods); hand values; `IObjective` contract test over all four. Oracle: ridge closed form; logistic vs scikit-learn later.
 
 **Lab 3 - Conditioning & data.** On raw *California housing*: build `A=X^T X/n`; compute `kappa` before/after standardization (oracle); see the level sets stretch. Sets up D2/D4.
 

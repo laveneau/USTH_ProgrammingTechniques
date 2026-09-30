@@ -33,11 +33,23 @@ imported by `tests/`, `benchmarks/` and `notebooks/` to check your work, never b
 package itself. `tests/test_no_oracle_in_src.py` parses the source tree and fails if
 one appears - it runs from day 1 as part of `make check`.
 
-## Your Week 1 autodiff module
+## The `autodiff` module
 
-Copy your Week 1 project into `src/optlab/autodiff/` (`dual.py` and `tensor.py`),
-replacing the placeholders. From day 1 it is used as a **gradient oracle**: every
-gradient you write by hand is checked against it as well as against finite differences.
+`src/optlab/autodiff/` is **provided** - do not edit it, and you do not need to supply it.
+It is the Week 1 project generalized from single numbers to numpy arrays, which is what the
+rest of `optlab` speaks. Nothing in `src/optlab/` imports it; it exists so that `tests/`
+can check a gradient against a computation that is **exact**, where finite differences stop
+at about six correct digits.
+
+    from optlab.autodiff import autodiff_gradient, jacobian_forward, exp, log
+
+`autodiff_gradient` is reverse mode - one sweep for a whole gradient, whatever `p` is, and
+what day 1 uses. `jacobian_forward` is forward mode - one sweep per parameter, each filling
+one column, which is the right shape for day 5's Jacobians.
+
+Your own Week 1 module works on single numbers. Keep it where it is: day 1's labwork asks
+you to read `tensor.py` against it and to explain the difference, but Week 2 never imports
+it, so an unfinished Week 1 project blocks nothing here.
 
 ## Daily commands
 
