@@ -47,14 +47,14 @@ class Dual:
         raise NotImplementedError("TODO: Dual.__rsub__")
 
     def __mul__(self, other: Dual | float) -> Dual:
-        """(a + bε)(c + dε) = ac + (ad + bc)ε  — the product rule!"""
+        """(a + bε)(c + dε) = ac + (ad + bc)ε  - the product rule!"""
         raise NotImplementedError("TODO: Dual.__mul__")
 
     def __rmul__(self, other: float) -> Dual:
         raise NotImplementedError("TODO: Dual.__rmul__")
 
     def __truediv__(self, other: Dual | float) -> Dual:
-        """(u/v)' = (u'v − uv')/v²  — the quotient rule."""
+        """(u/v)' = (u'v − uv')/v²  - the quotient rule."""
         raise NotImplementedError("TODO: Dual.__truediv__")
 
     def __rtruediv__(self, other: float) -> Dual:

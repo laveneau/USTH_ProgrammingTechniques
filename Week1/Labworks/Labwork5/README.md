@@ -1,4 +1,4 @@
-# autodiff — Week 1 project: automatic differentiation
+# autodiff - Week 1 project: automatic differentiation
 
 In this project you build a small library that computes **exact derivatives of Python
 code**, in the two modes used by every machine-learning framework:
@@ -6,7 +6,7 @@ code**, in the two modes used by every machine-learning framework:
 - **forward mode** with *dual numbers* (`Dual`);
 - **reverse mode**, a.k.a. **backpropagation** (`Var`).
 
-It closes Week 1 — it uses classes, typing, tests and SOLID — and it is the tool
+It closes Week 1 - it uses classes, typing, tests and SOLID - and it is the tool
 Week 2 (optimization) relies on to check every gradient.
 
 Read `Lecture5-autodiff.ipynb` first.
@@ -27,9 +27,9 @@ Python >= 3.10. All the commands below use `python3`; if your Python is called
 ```
 autodiff/
 ├── __init__.py      # public API                                   (provided)
-├── dual.py          # Part 1 — forward mode                         TO COMPLETE
-├── var.py           # Part 2 — reverse mode                         TO COMPLETE
-├── gradient.py      # Part 3 — gradients of f: ℝⁿ → ℝ               TO COMPLETE
+├── dual.py          # Part 1 - forward mode                         TO COMPLETE
+├── var.py           # Part 2 - reverse mode                         TO COMPLETE
+├── gradient.py      # Part 3 - gradients of f: ℝⁿ → ℝ               TO COMPLETE
 └── functions.py     # exp, log, sin, cos for float/Dual/Var         (provided)
 tests/               # unit tests                                    (provided, do not modify)
 notebooks/
@@ -43,9 +43,9 @@ given as a worked example: follow the same pattern.
 
 | Part | File | Command | Suggested time |
 |---|---|---|---|
-| 1 — dual numbers | `autodiff/dual.py` | `make part1` | 45 min |
-| 2 — backpropagation | `autodiff/var.py` | `make part2` | 95 min |
-| 3 — gradients | `autodiff/gradient.py` | `make part3` | 20 min |
+| 1 - dual numbers | `autodiff/dual.py` | `make part1` | 45 min |
+| 2 - backpropagation | `autodiff/var.py` | `make part2` | 95 min |
+| 3 - gradients | `autodiff/gradient.py` | `make part3` | 20 min |
 
 Work **test by test** (red → green): read a failing test, make it pass, commit.
 

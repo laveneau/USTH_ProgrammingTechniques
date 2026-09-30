@@ -1,4 +1,4 @@
-"""Part 3 — gradients of functions of several variables."""
+"""Part 3 - gradients of functions of several variables."""
 import unittest
 
 from autodiff import exp, gradient_forward, gradient_reverse, numerical_gradient

@@ -1,4 +1,4 @@
-"""Elementary functions working on floats, Dual and Var alike (PROVIDED — do not modify).
+"""Elementary functions working on floats, Dual and Var alike (PROVIDED - do not modify).
 
 This is duck typing (Lecture 2): each function delegates to the method of the same
 name when its argument is a Dual or a Var, and to the `math` module otherwise.
