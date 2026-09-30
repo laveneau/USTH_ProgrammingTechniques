@@ -38,4 +38,8 @@ class Quadratic(IObjective, ITwiceDifferentiable):
         Eigenvalues spaced logarithmically between 1 and `kappa`, and b = 0, so the
         minimizer is the origin and the error is just ||x||.
         """
-        raise NotImplementedError("[DAY 1] lab 2")
+        # Logarithmic rather than linear spacing so the eigenvalues are spread across
+        # every order of magnitude between 1 and kappa, instead of bunching near kappa.
+        # Diagonal, so cond(A) is exactly kappa/1 = kappa with no rounding to argue about.
+        eigenvalues = np.logspace(0.0, np.log10(kappa), n)
+        return Quadratic(np.diag(eigenvalues), np.zeros(n))

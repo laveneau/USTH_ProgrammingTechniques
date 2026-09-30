@@ -57,6 +57,12 @@ target-version = "py311"
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.per-file-ignores]
+# The demo notebooks are exploratory plotting code, not library code: throwaway lambdas,
+# imports kept for the next cell, long one-line titles. Linting them at library strictness
+# would greet a student with a screen of red in files they never touched, on day 1, the
+# first time they run `make check`. mypy already scopes itself to `src` for the same
+# reason. Everything under `src` and `tests` stays strict.
+"notebooks/**" = ["E", "F", "I", "UP", "B", "SIM"]
 # Stubs import what their finished implementation will need. Remove this entry once
 # the package is written: an unused import should be an error again by then.
 "src/optlab/**" = ["F401"]

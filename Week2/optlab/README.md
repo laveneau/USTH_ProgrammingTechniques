@@ -29,7 +29,7 @@ working code. Each stub is tagged with the day it is filled in, e.g. `[DAY 4]`.
 ## Imports allowed inside `src/optlab/`
 
 **`numpy` only.** `scipy`, `scikit-learn` and `matplotlib` are *oracles*: they may be
-imported by `tests/`, `benchmarks/` and `notebooks/` to check your work, never by the
+imported by `tests/`, `benchmarks/` and the labwork notebooks to check your work, never by the
 package itself. `tests/test_no_oracle_in_src.py` parses the source tree and fails if
 one appears - it runs from day 1 as part of `make check`.
 
