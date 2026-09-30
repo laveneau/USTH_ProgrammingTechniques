@@ -26,7 +26,7 @@ def test_soft_threshold_is_odd() -> None:
 
 
 def test_large_threshold_zeroes_everything() -> None:
-    """Past lambda·t = max|v| the whole solution collapses to zero: the end of the path."""
+    """Past lambda*t = max|v| the whole solution collapses to zero: the end of the path."""
     np.testing.assert_allclose(
         L1(lam=10.0).prox(np.array([3.0, -0.4, 0.1]), 1.0), np.zeros(3)
     )

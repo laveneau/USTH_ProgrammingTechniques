@@ -4,7 +4,7 @@ Outside `src/`, so scipy and scikit-learn are available here as oracles.
 
 Record per (problem, method): iterations or epochs, function and gradient evaluations,
 wall-clock, final loss, and the gap to the oracle's minimizer. The deliverable is not
-the CSV but the one-page answer to "which optimizer for which problem?" — and the
+the CSV but the one-page answer to "which optimizer for which problem?" - and the
 honest version of that answer names the cases where the fancy method loses.
 """
 

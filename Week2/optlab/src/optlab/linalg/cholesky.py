@@ -1,7 +1,7 @@
-"""[DAY 4] Cholesky factorization — the only linear solver the course needs.
+"""[DAY 4] Cholesky factorization - the only linear solver the course needs.
 
 Never invert a matrix to solve a system. Factor once, then two triangular solves:
-n³/3 flops instead of n³, and far better numerics.
+n^3/3 flops instead of n^3, and far better numerics.
 
 The failure mode is the feature. `cholesky` succeeds if and only if the matrix is
 positive definite, so a failure is information: geometrically the quadratic model has a
@@ -17,7 +17,7 @@ from ..types import Mat, Vec
 
 
 def cholesky(A: Mat) -> Mat:
-    """The lower-triangular L with A = LLᵀ.
+    """The lower-triangular L with A = LL^T.
 
     Raises `NotPositiveDefiniteError` as soon as a pivot is non-positive. Vectorize the
     inner loop over i rather than writing three nested Python loops.
@@ -31,12 +31,12 @@ def solve_lower(L: Mat, b: Vec) -> Vec:
 
 
 def solve_upper_from_lower(L: Mat, y: Vec) -> Vec:
-    """Back substitution: solve Lᵀ x = y, using L rather than forming its transpose."""
+    """Back substitution: solve L^T x = y, using L rather than forming its transpose."""
     raise NotImplementedError("[DAY 4] lab 1")
 
 
 class CholeskySolver(ILinearSolver):
-    """Solves A x = b for symmetric positive definite A, via A = LLᵀ.
+    """Solves A x = b for symmetric positive definite A, via A = LL^T.
 
     Written once on day 4, then injected unchanged into `NewtonDirection`,
     `GaussNewton` and `LevenbergMarquardt`. Three optimizers, one solver, no copies.

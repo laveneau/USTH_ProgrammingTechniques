@@ -84,7 +84,7 @@ class Recorder(IObjective, IBatchObjective):
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — the mini-batch gradient
+# Exercise 1 - the mini-batch gradient
 # --------------------------------------------------------------------------- #
 
 
@@ -100,8 +100,8 @@ def test_n_samples_is_a_plain_int(hand_X: Mat, hand_y_linear: Vec) -> None:
 def test_batch_gradient_over_one_sample_by_hand(hand_X: Mat, hand_y_linear: Vec) -> None:
     """X = [[1], [2]], y = (2, 4), w = 0.
 
-    Row 0 alone: z = 0, φ'(z, y) = z − y = −2, so the gradient is 1·(−2)/1 = −2.
-    Row 1 alone: 2·(0 − 4)/1 = −8. The full gradient, −5, is their mean.
+    Row 0 alone: z = 0, phi'(z, y) = z - y = -2, so the gradient is 1*(-2)/1 = -2.
+    Row 1 alone: 2*(0 - 4)/1 = -8. The full gradient, -5, is their mean.
     """
     loss = linear_regression(hand_X, hand_y_linear)
     w = np.zeros(1)
@@ -137,7 +137,7 @@ def test_batch_gradient_is_unbiased() -> None:
     """Averaging the singleton gradients reproduces the full gradient exactly.
 
     This is the whole justification for sampling: the estimate is not systematically
-    wrong in any direction. Uniform sampling is where the argument is used — the mean
+    wrong in any direction. Uniform sampling is where the argument is used - the mean
     below weights every sample equally.
     """
     X, _, y = _dataset()
@@ -154,7 +154,7 @@ def test_batch_gradient_has_the_shape_of_w() -> None:
 
 
 def test_gradient_is_implemented_through_batch_gradient() -> None:
-    """Exercise 1's refactor: `Xᵀφ'/n` must appear once in the file, in `batch_gradient`.
+    """Exercise 1's refactor: `X^T phi'/n` must appear once in the file, in `batch_gradient`.
 
     If `gradient` still carries its own copy of the formula this spy sees no call, and
     the two copies will disagree the first time one of them is edited.
@@ -167,7 +167,7 @@ def test_gradient_is_implemented_through_batch_gradient() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — SGD
+# Exercise 2 - SGD
 # --------------------------------------------------------------------------- #
 
 
@@ -175,7 +175,7 @@ def test_full_batch_sgd_is_exactly_gradient_descent() -> None:
     """The check the subject calls non-negotiable, and it is an *equality* of floats.
 
     With b = n there is one batch per epoch and it is the whole dataset, so the update
-    is w − α∇f(w) and nothing else. A stray decay, a half-applied momentum or a wrong
+    is w - alpha*grad f(w) and nothing else. A stray decay, a half-applied momentum or a wrong
     divisor all show up here as a difference far above rounding.
     """
     X, y, _ = _dataset()
@@ -227,7 +227,7 @@ def test_run_ignores_the_global_numpy_seed() -> None:
 
 
 def test_one_epoch_uses_every_sample_exactly_once() -> None:
-    """Reshuffling, not sampling with replacement — and no dropped remainder.
+    """Reshuffling, not sampling with replacement - and no dropped remainder.
 
     n = 10 with b = 4 gives blocks of 4, 4 and 2. The short block is kept: dropping it
     would quietly ignore two samples out of ten on every epoch.
@@ -277,7 +277,7 @@ def test_the_recorded_value_is_the_full_loss_not_a_batch_loss() -> None:
 
 
 def test_the_step_size_follows_the_decay_schedule() -> None:
-    """α_k = α₀/(1 + γk), indexed by epoch — the schedule of Lecture 3."""
+    """alpha_k = alpha_0/(1 + gamma*k), indexed by epoch - the schedule of Lecture 3."""
     X, y, _ = _dataset()
     history = History()
     SGD(batch_size=10, lr=0.4, n_epochs=5, lr_decay=0.25, rng=np.random.default_rng(0),
@@ -299,7 +299,7 @@ def test_no_decay_by_default() -> None:
 def test_decay_lowers_the_noise_floor() -> None:
     """The plateau of a constant step is set by the step, and shrinking it escapes.
 
-    A weaker version of notebook 3 §3, small enough to run in a test: the decayed run
+    A weaker version of notebook 3 Sec. 3, small enough to run in a test: the decayed run
     must end well below the constant one, not merely below it.
     """
     X, _, y = _dataset(n=200, d=4, seed=3)
@@ -326,7 +326,7 @@ def test_momentum_defaults_to_none_and_changes_the_run_when_set() -> None:
 
 
 def test_sgd_reports_the_budget_it_spent() -> None:
-    """Spending an epoch budget is not convergence — `MaxIterations` is not either."""
+    """Spending an epoch budget is not convergence - `MaxIterations` is not either."""
     X, y, _ = _dataset()
     result = SGD(batch_size=8, lr=0.05, n_epochs=7,
                  rng=np.random.default_rng(0)).minimize(linear_regression(X, y), np.zeros(3))
@@ -359,22 +359,22 @@ def test_sgd_refuses_an_objective_that_cannot_be_sampled() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 3 — Adam
+# Exercise 3 - Adam
 # --------------------------------------------------------------------------- #
 
 
 def test_the_first_adam_step_is_lr_times_the_sign_of_the_gradient() -> None:
-    """At t = 1, m̂ = g and √v̂ = |g|, so the ratio is sign(g) — exactly.
+    """At t = 1, m_hat = g and sqrt(v_hat) = |g|, so the ratio is sign(g) - exactly.
 
     Checked over six orders of magnitude of gradient: that the size of the step does not
     depend on the size of the gradient is the whole of what Adam does.
 
-    The tolerance is 10⁻⁴ rather than machine precision because of `eps`. It is added to
-    √v̂ to keep the division safe, so it also costs a relative eps/|g| — a millionth at
-    |g| = 10⁻³ here, and the reason `eps` must stay far below the gradients you expect.
+    The tolerance is 10^-4 rather than machine precision because of `eps`. It is added to
+    sqrt(v_hat) to keep the division safe, so it also costs a relative eps/|g| - a millionth at
+    |g| = 10^-3 here, and the reason `eps` must stay far below the gradients you expect.
     """
     for magnitude in (1e-3, 1.0, 1e3):
-        # X = I and y = (2m, −2m) put the gradient at exactly (−m, +m) for w = 0.
+        # X = I and y = (2m, -2m) put the gradient at exactly (-m, +m) for w = 0.
         X = np.eye(2)
         y = np.array([2.0 * magnitude, -2.0 * magnitude])
         loss = GLMLoss(X, y, SquaredError())
@@ -389,7 +389,8 @@ def test_the_first_adam_step_is_lr_times_the_sign_of_the_gradient() -> None:
 
 
 def test_the_first_step_is_bias_corrected() -> None:
-    """Without the correction the first step would be (1−β₁)/√(1−β₂) ≈ 3.162 times larger.
+    """Without the correction the first step would be (1-beta_1)/sqrt(1-beta_2)
+    ~ 3.162 times larger.
 
     The usual "the averages start at zero so early steps are too small" is only half the
     story: both moments are biased towards zero, the step is their ratio, and here the
@@ -410,11 +411,11 @@ def test_bias_correction_counts_steps_not_epochs() -> None:
     """Two batches in one epoch are two updates, so t goes 1 then 2.
 
     Every row of this problem is identical, so the batch gradient is the same whichever
-    half the shuffle produced — which makes the arithmetic below exact without pinning
+    half the shuffle produced - which makes the arithmetic below exact without pinning
     down the permutation. Indexing t by epoch leaves the second step at t = 1 and lands
     somewhere measurably different.
     """
-    loss = ConstantPerSample(4)      # f(w) = ½w², so ∇f = w on every batch
+    loss = ConstantPerSample(4)      # f(w) = 1/2*w^2, so grad f = w on every batch
     lr, b1, b2, eps = 0.1, 0.9, 0.999, 1e-8
 
     w = np.array([1.0])
@@ -459,7 +460,7 @@ def test_adam_refuses_an_objective_that_cannot_be_sampled() -> None:
 
 def test_adam_makes_progress_on_a_well_scaled_problem() -> None:
     """A sanity run. Note the modest `lr`: Adam has a noise floor like any stochastic
-    method, and at `lr = 0.1` this run stops at ‖∇f‖ ≈ 3·10⁻², eight times worse.
+    method, and at `lr = 0.1` this run stops at ||grad f|| ~ 3*10^-2, eight times worse.
     "Use Adam and stop tuning" is not a thing.
     """
     X, y, _ = _dataset(n=120, d=3, seed=8)
@@ -474,7 +475,7 @@ def test_adam_makes_progress_on_a_well_scaled_problem() -> None:
 def test_adam_beats_sgd_when_the_features_are_badly_scaled() -> None:
     """The lab's headline comparison, shrunk to test size.
 
-    One column of order 1, one of order 10⁻³. SGD's largest stable step is set by the
+    One column of order 1, one of order 10^-3. SGD's largest stable step is set by the
     stiff direction and all the missing progress is in the soft one; there is no single
     number that serves both. Adam divides each coordinate by its own gradient scale and
     the problem goes away.

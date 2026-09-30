@@ -24,5 +24,5 @@ class History(IObserver):
 
     @property
     def grad_norms(self) -> list[float]:
-        """‖∇f‖ at each iteration — plot this on a log scale to read the rate."""
+        """||grad f|| at each iteration - plot this on a log scale to read the rate."""
         raise NotImplementedError("[DAY 2] lab 1")

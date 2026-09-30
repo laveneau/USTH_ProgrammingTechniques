@@ -30,7 +30,7 @@ def test_cholesky_is_lower_triangular(rng) -> None:
 
 
 def test_cholesky_fails_on_an_indefinite_matrix() -> None:
-    """[[1,2],[2,1]]: the second pivot would be L22² = -3. Report it, do not sqrt it."""
+    """[[1,2],[2,1]]: the second pivot would be L22^2 = -3. Report it, do not sqrt it."""
     with pytest.raises(NotPositiveDefiniteError):
         cholesky(np.array([[1.0, 2.0], [2.0, 1.0]]))
 

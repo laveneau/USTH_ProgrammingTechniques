@@ -25,7 +25,7 @@ from .directions import HeavyBall, NewtonDirection, SteepestDescent
 
 
 class DescentOptimizer(IOptimizer):
-    """x ← x + α·d, where `direction` chooses d and `line_search` chooses α.
+    """x <- x + alpha*d, where `direction` chooses d and `line_search` chooses alpha.
 
     Every collaborator arrives through the constructor. The loop itself only:
     evaluates, asks for a direction, asks for a step, moves, builds a `StepEvent`,
@@ -62,7 +62,7 @@ def momentum(beta: float = 0.9, alpha: float = 0.01, max_iter: int = 1000) -> De
 
 
 def newton(tol: float = 1e-8, max_iter: int = 100) -> DescentOptimizer:
-    """[DAY 4] Newton's direction, Cholesky solver, Armijo starting at α = 1.
+    """[DAY 4] Newton's direction, Cholesky solver, Armijo starting at alpha = 1.
 
     Note what this function is: four existing objects composed. No new loop, no new
     optimizer class. If it reads as anything more than wiring, the wiring is wrong.

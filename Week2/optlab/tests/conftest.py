@@ -8,7 +8,7 @@ from optlab.types import Mat, Vec
 
 @pytest.fixture
 def hand_X() -> Mat:
-    """X = [[1], [2]] — small enough to differentiate on paper."""
+    """X = [[1], [2]] - small enough to differentiate on paper."""
     return np.array([[1.0], [2.0]])
 
 

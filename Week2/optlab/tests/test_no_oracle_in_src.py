@@ -1,7 +1,7 @@
 """The ground rule of the week, enforced. This test is PROVIDED and already passes.
 
 `scipy` and `scikit-learn` are oracles: tests, benchmarks and notebooks may import them
-to check your work. The package itself may import `numpy` and nothing else — if scipy
+to check your work. The package itself may import `numpy` and nothing else - if scipy
 could be called from `src/optlab/`, you would not be writing the algorithms.
 
 Parsing the source with `ast` rather than grepping means a mention inside a string or a
@@ -34,5 +34,5 @@ def test_no_oracle_import(path: Path) -> None:
     offenders = _imported_roots(tree) & FORBIDDEN
     assert not offenders, (
         f"{path.relative_to(SRC.parent.parent)} imports {sorted(offenders)}. "
-        "Only numpy is allowed inside src/optlab/ — oracles belong in tests/."
+        "Only numpy is allowed inside src/optlab/ - oracles belong in tests/."
     )

@@ -5,7 +5,7 @@ Read these as the specification of Exercises 2, 3 and 4. Exercise 1 has its own 
 
 Two of these check a *design* decision rather than a number.
 `test_newton_lets_the_cholesky_failure_through` pins the propagate-do-not-swallow rule
-that the whole of §3 of notebook 4 depends on, and
+that the whole of Sec. 3 of notebook 4 depends on, and
 `test_a_line_search_cannot_repair_an_indefinite_hessian` pins the distinction the lecture
 spends a page on: a line search fixes step *length* and can only veto a direction.
 """
@@ -37,9 +37,9 @@ pytestmark = pytest.mark.day4
 
 
 class DoubleWell(IObjective, ITwiceDifferentiable):
-    """f(x) = (x² − 1)², in one variable. Minima at ±1, a local MAXIMUM at 0.
+    """f(x) = (x^2 - 1)^2, in one variable. Minima at +/-1, a local MAXIMUM at 0.
 
-    The example from Lecture 4: at x = 0.3 the curvature is −2.92, so the Newton
+    The example from Lecture 4: at x = 0.3 the curvature is -2.92, so the Newton
     direction points uphill and Cholesky refuses to produce it at all.
     """
 
@@ -54,7 +54,7 @@ class DoubleWell(IObjective, ITwiceDifferentiable):
 
 
 class OnlyFirstOrder(IObjective):
-    """An objective with no Hessian at all — `ITwiceDifferentiable` is a separate mixin."""
+    """An objective with no Hessian at all - `ITwiceDifferentiable` is a separate mixin."""
 
     def value(self, x: Vec) -> float:
         return float(x @ x)
@@ -75,7 +75,7 @@ def _stop(tol: float = 1e-10, max_iter: int = 60) -> AnyOf:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — check_hessian and the three hessians
+# Exercise 2 - check_hessian and the three hessians
 # --------------------------------------------------------------------------- #
 
 
@@ -95,7 +95,7 @@ def test_check_hessian_rejects_a_wrong_hessian() -> None:
 
 
 def test_quadratic_hessian_is_the_matrix_itself() -> None:
-    """Constant — which is exactly why Newton finishes a quadratic in one step."""
+    """Constant - which is exactly why Newton finishes a quadratic in one step."""
     A = np.array([[4.0, 1.0], [1.0, 3.0]])
     problem = Quadratic(A, np.array([1.0, -2.0]))
     np.testing.assert_allclose(problem.hessian(np.zeros(2)), A)
@@ -103,19 +103,19 @@ def test_quadratic_hessian_is_the_matrix_itself() -> None:
 
 
 def test_rosenbrock_hessian_by_hand_at_the_minimum() -> None:
-    """At (1, 1): H = [[802, −400], [−400, 200]], which is worth checking on paper."""
+    """At (1, 1): H = [[802, -400], [-400, 200]], which is worth checking on paper."""
     H = Rosenbrock().hessian(np.array([1.0, 1.0]))
     np.testing.assert_allclose(H, np.array([[802.0, -400.0], [-400.0, 200.0]]))
 
 
 def test_rosenbrock_hessian_is_indefinite_above_the_parabola() -> None:
-    """det H = 400 − 80000y + 80000x², so H fails to be PD exactly where y > x² + 1/200."""
+    """det H = 400 - 80000y + 80000x^2, so H fails to be PD exactly where y > x^2 + 1/200."""
     assert np.linalg.eigvalsh(Rosenbrock().hessian(np.array([0.0, 2.0])))[0] < 0.0
     assert np.linalg.eigvalsh(Rosenbrock().hessian(np.array([0.0, -2.0])))[0] > 0.0
 
 
 def test_glm_hessian_by_hand(hand_X: Mat, hand_y_linear: Vec) -> None:
-    """Squared error has φ'' = 1, so H = XᵀX/n = (1·1 + 2·2)/2 = 2.5."""
+    """Squared error has phi'' = 1, so H = X^T X/n = (1*1 + 2*2)/2 = 2.5."""
     loss = linear_regression(hand_X, hand_y_linear)
     np.testing.assert_allclose(loss.hessian(np.zeros(1)), np.array([[2.5]]))
 
@@ -140,12 +140,12 @@ def test_every_hessian_is_symmetric() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — NewtonDirection and newton()
+# Exercise 2 - NewtonDirection and newton()
 # --------------------------------------------------------------------------- #
 
 
 def test_newton_solves_a_quadratic_in_one_iteration() -> None:
-    """The model is not a model here, it is the function — so one step is exact."""
+    """The model is not a model here, it is the function - so one step is exact."""
     A = np.array([[4.0, 1.0], [1.0, 3.0]])
     b = np.array([1.0, -2.0])
     result = newton().minimize(Quadratic(A, b), np.array([5.0, -7.0]))
@@ -164,7 +164,7 @@ def test_newton_on_linear_regression_is_the_normal_equations() -> None:
 
 
 def test_newton_and_gradient_descent_find_the_same_logistic_minimizer() -> None:
-    """Different routes, one minimum — and note the iteration counts while you are here.
+    """Different routes, one minimum - and note the iteration counts while you are here.
 
     Newton: 3 iterations. Steepest descent with the same line search and a *looser* target:
     128. That ratio is the whole argument for paying for a Hessian.
@@ -185,7 +185,7 @@ def test_newton_and_gradient_descent_find_the_same_logistic_minimizer() -> None:
 
 
 def test_the_newton_error_squares_at_every_step() -> None:
-    """e_{k+1}/e_k² stays bounded — the definition of quadratic convergence."""
+    """e_{k+1}/e_k^2 stays bounded - the definition of quadratic convergence."""
     X, _, y = _design(n=200, d=5, seed=4)
     loss = GLMLoss(X, y, LogisticNLL())
     history = History()
@@ -205,7 +205,7 @@ def test_the_newton_error_squares_at_every_step() -> None:
 
 
 def test_newton_direction_solves_the_newton_equation() -> None:
-    """H d = −g, and nothing else: no fallback, no scaling, no inverse."""
+    """H d = -g, and nothing else: no fallback, no scaling, no inverse."""
     A = np.array([[4.0, 1.0], [1.0, 3.0]])
     problem = Quadratic(A, np.array([1.0, -2.0]))
     x = np.array([0.5, 0.5])
@@ -223,12 +223,12 @@ def test_newton_direction_needs_a_hessian() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 3 — the indefinite Hessian, and what does and does not repair it
+# Exercise 3 - the indefinite Hessian, and what does and does not repair it
 # --------------------------------------------------------------------------- #
 
 
 def test_newton_lets_the_cholesky_failure_through() -> None:
-    """Propagate, do not fall back to −g.
+    """Propagate, do not fall back to -g.
 
     The exception says the quadratic model has a direction of negative curvature. Swapping
     in the gradient would hide that and leave the caller thinking Newton had run.
@@ -259,7 +259,7 @@ def test_a_line_search_cannot_repair_an_indefinite_hessian() -> None:
 
 
 def test_modified_newton_reaches_the_minimum_of_the_double_well() -> None:
-    """From x₀ = 0.3, where the textbook iteration converges to the maximum at x = 0."""
+    """From x_0 = 0.3, where the textbook iteration converges to the maximum at x = 0."""
     history = History()
     result = DescentOptimizer(
         ModifiedNewton(CholeskySolver()), Armijo(), _stop(), observers=[history]
@@ -278,7 +278,7 @@ def test_modified_newton_reaches_the_minimum_of_the_double_well() -> None:
 def test_modified_newton_is_plain_newton_where_the_hessian_is_positive_definite() -> None:
     """The damping must get out of the way, or quadratic convergence is lost.
 
-    On a positive definite problem the undamped solve succeeds and τ is never used, so
+    On a positive definite problem the undamped solve succeeds and tau is never used, so
     the two directions agree to the last bit.
     """
     A = np.array([[4.0, 1.0], [1.0, 3.0]])
@@ -291,7 +291,7 @@ def test_modified_newton_is_plain_newton_where_the_hessian_is_positive_definite(
 
 
 def test_modified_newton_returns_a_descent_direction_on_an_indefinite_hessian() -> None:
-    """gᵀd < 0 where the undamped Newton direction points uphill."""
+    """g^T d < 0 where the undamped Newton direction points uphill."""
     problem = DoubleWell()
     x = np.array([0.3])
     g = problem.gradient(x)
@@ -300,9 +300,9 @@ def test_modified_newton_returns_a_descent_direction_on_an_indefinite_hessian() 
 
 
 def test_the_damping_does_not_persist_between_calls() -> None:
-    """τ restarts from `tau0` every call.
+    """tau restarts from `tau0` every call.
 
-    A τ that only ever grew would turn the method into a very short steepest descent for
+    A tau that only ever grew would turn the method into a very short steepest descent for
     the rest of the run. Asking for a hard point first must not degrade the easy one after.
     """
     rule = ModifiedNewton(CholeskySolver())
@@ -335,7 +335,7 @@ def test_modified_newton_gives_up_rather_than_lying() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 4 — ridge, for free
+# Exercise 4 - ridge, for free
 # --------------------------------------------------------------------------- #
 
 
@@ -376,7 +376,7 @@ def test_the_regularized_gradient_is_the_gradient_of_the_regularized_value() -> 
 
 
 def test_ridge_lifts_every_eigenvalue_by_lambda() -> None:
-    """Which is why ridge can never break Cholesky — and it is the last piece of day 5."""
+    """Which is why ridge can never break Cholesky - and it is the last piece of day 5."""
     X, y, _ = _design()
     lam = 0.7
     inner = GLMLoss(X, y, SquaredError())

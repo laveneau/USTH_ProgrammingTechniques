@@ -1,6 +1,6 @@
-"""[DAY 5] Nonlinear least squares: exploiting the structure of ½‖r(x)‖².
+"""[DAY 5] Nonlinear least squares: exploiting the structure of 1/2||r(x)||^2.
 
-The exact Hessian is JᵀJ + Σ rᵢ∇²rᵢ. Gauss-Newton drops the second term, which costs
+The exact Hessian is J^T J + sum r_i grad^2 r_i. Gauss-Newton drops the second term, which costs
 nothing to justify when the residuals are small or the model is nearly linear, and costs
 convergence when they are not.
 
@@ -15,10 +15,10 @@ from ..types import Vec
 
 
 class GaussNewton(IOptimizer):
-    """Solve (JᵀJ)δ = −Jᵀr, then x ← x + δ.
+    """Solve (J^T J)*delta = -J^T r, then x <- x + delta.
 
-    Cheap — only first derivatives — and nearly quadratic when residuals are small. But
-    JᵀJ can be singular, and then it diverges. Day 5 asks you to make it diverge on
+    Cheap - only first derivatives - and nearly quadratic when residuals are small. But
+    J^T J can be singular, and then it diverges. Day 5 asks you to make it diverge on
     purpose from the hard start and to document that failure rather than patch it: it is
     the motivation for the next class.
     """
@@ -41,19 +41,19 @@ class GaussNewton(IOptimizer):
 
 
 class LevenbergMarquardt(IOptimizer):
-    """Solve (JᵀJ + λI)δ = −Jᵀr, adapting λ by the gain ratio.
+    """Solve (J^T J + lam*I)*delta = -J^T r, adapting lam by the gain ratio.
 
-    λ → 0 recovers Gauss-Newton; λ → ∞ gives a small gradient step. Since JᵀJ + λI is
-    positive definite for any λ > 0, Cholesky never fails here — a direct payoff of
+    lam -> 0 recovers Gauss-Newton; lam -> inf gives a small gradient step. Since J^T J + lam*I is
+    positive definite for any lam > 0, Cholesky never fails here - a direct payoff of
     day 4, and the reason LM is the workhorse of curve fitting.
 
-    λ is the dual of a trust-region radius: larger λ means a smaller trusted step. The
+    lam is the dual of a trust-region radius: larger lam means a smaller trusted step. The
     gain ratio
 
-        ρ = (actual reduction) / (predicted reduction),   predicted = ½δᵀ(λδ − g)
+        rho = (actual reduction) / (predicted reduction),   predicted = 1/2*delta^T(lam*delta - g)
 
-    drives it. ρ small or negative: reject the step and increase λ (shrink the region).
-    ρ large: accept and decrease λ. This is day 4's damped Newton with a principled τ.
+    drives it. rho small or negative: reject the step and increase lam (shrink the region).
+    rho large: accept and decrease lam. This is day 4's damped Newton with a principled tau.
 
     Line search fixes a direction and searches the length; a trust region fixes a radius
     and searches direction and length together inside the ball. LM is the second kind.

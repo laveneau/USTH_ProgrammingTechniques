@@ -1,4 +1,4 @@
-# optlab — student repository (Week 2: Optimization)
+# optlab - student repository (Week 2: Optimization)
 
 You will spend the whole week in this one repository. Clone it once; nothing else is downloaded afterwards.
 
@@ -31,7 +31,7 @@ working code. Each stub is tagged with the day it is filled in, e.g. `[DAY 4]`.
 **`numpy` only.** `scipy`, `scikit-learn` and `matplotlib` are *oracles*: they may be
 imported by `tests/`, `benchmarks/` and `notebooks/` to check your work, never by the
 package itself. `tests/test_no_oracle_in_src.py` parses the source tree and fails if
-one appears — it runs from day 1 as part of `make check`.
+one appears - it runs from day 1 as part of `make check`.
 
 ## Your Week 1 autodiff module
 
@@ -51,8 +51,8 @@ make check        # tests + mypy --strict + ruff + the no-oracle guard
 
 ## What is graded
 
-Hidden tests 40 % · code quality (`mypy`, `ruff`, no dead code, no oracle in `src/`) 20 % ·
-extensibility challenge 15 % · `DESIGN.md` 10 % · benchmark note 15 %.
+Hidden tests 40 % - code quality (`mypy`, `ruff`, no dead code, no oracle in `src/`) 20 % *
+extensibility challenge 15 % - `DESIGN.md` 10 % - benchmark note 15 %.
 
-Keep `DESIGN.md` up to date as you go — it is where you justify your design decisions,
+Keep `DESIGN.md` up to date as you go - it is where you justify your design decisions,
 and it is the only place an edit to a provided file could ever be defended.

@@ -7,7 +7,7 @@ is the test Exercise 2 asks you to write and **leave in**: it asserts a failure,
 purpose, because that failure is the reason Levenberg-Marquardt exists and the class is
 unintelligible without it. And `test_levenberg_marquardt_converges_to_a_worse_minimum`
 asserts that a run reporting `converged=True` found an answer 178 times worse than the
-best one — `converged` means "the gradient is small *here*", never "this is the best".
+best one - `converged` means "the gradient is small *here*", never "this is the best".
 """
 
 import numpy as np
@@ -65,7 +65,7 @@ def _grad(problem: ILeastSquaresProblem, x: Vec) -> Vec:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — residuals and Jacobians
+# Exercise 1 - residuals and Jacobians
 # --------------------------------------------------------------------------- #
 
 
@@ -76,9 +76,9 @@ def test_exp_decay_residuals_by_hand() -> None:
 
 
 def test_residuals_are_model_minus_data_not_the_other_way_round() -> None:
-    """A flipped sign survives every symmetric check: ‖r‖² and JᵀJ are both blind to it.
+    """A flipped sign survives every symmetric check: ||r||^2 and J^T J are both blind to it.
 
-    It shows up in `g = Jᵀr`, which then points uphill, and the optimizer walks away from
+    It shows up in `g = J^T r`, which then points uphill, and the optimizer walks away from
     the solution while every "is my Jacobian right" test stays green. Pin the orientation.
     """
     problem = ExpDecay(np.array([0.0]), np.array([1.0]))
@@ -100,7 +100,7 @@ def test_residuals_are_model_minus_data_not_the_other_way_round() -> None:
 def test_the_analytic_jacobian_matches_finite_differences(
     problem: ILeastSquaresProblem, x: Vec
 ) -> None:
-    """Exercise 1's own instruction, as a test. A sign error here does not raise — it
+    """Exercise 1's own instruction, as a test. A sign error here does not raise - it
     just makes the optimizer fail mysteriously, and you lose an hour."""
     numeric = numerical_jacobian(problem.residuals, x)
     analytic = problem.jacobian(x)
@@ -126,7 +126,7 @@ def test_jt_r_is_the_gradient_of_half_r_squared(problem: ILeastSquaresProblem, x
 
 
 def test_the_jacobian_does_not_depend_on_the_data() -> None:
-    """r = model(x) − y, so ∂r/∂x = ∂model/∂x and y drops out of the derivative entirely.
+    """r = model(x) - y, so dr/dx = dmodel/dx and y drops out of the derivative entirely.
 
     Worth knowing, and worth testing: a Jacobian that changes with y has y somewhere it
     should not be.
@@ -139,14 +139,14 @@ def test_the_jacobian_does_not_depend_on_the_data() -> None:
 
 
 def test_a_perfect_fit_has_zero_residuals() -> None:
-    """The truth reproduces the data exactly on noiseless data — the sanity check that
+    """The truth reproduces the data exactly on noiseless data - the sanity check that
     catches a model written with the wrong sign in the exponent."""
     problem = _exp_problem()
     np.testing.assert_allclose(problem.residuals(EXP_TRUTH), np.zeros(40), atol=1e-14)
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — Gauss-Newton
+# Exercise 2 - Gauss-Newton
 # --------------------------------------------------------------------------- #
 
 
@@ -165,10 +165,10 @@ def test_gauss_newton_recovers_the_parameters_from_a_good_start() -> None:
 
 
 def test_gauss_newton_solves_a_linear_problem_in_one_step() -> None:
-    """When the model is linear in x, JᵀJ is the exact Hessian and GN *is* Newton.
+    """When the model is linear in x, J^T J is the exact Hessian and GN *is* Newton.
 
     `ExpDecay` with b pinned is not linear, so the test builds a genuinely linear
-    least-squares problem: r(x) = Ax − b. One step must land on the normal-equation
+    least-squares problem: r(x) = Ax - b. One step must land on the normal-equation
     solution, and the second must find nothing left to do.
     """
 
@@ -205,8 +205,8 @@ def test_gauss_newton_uses_the_injected_solver() -> None:
 def test_gauss_newton_diverges_from_the_hard_start() -> None:
     """**Exercise 2 asks you to write this and leave it in.**
 
-    From (1, 10, 1) the model is nearly constant past t ≈ 0.5, so the columns of J for a
-    and c are nearly parallel and JᵀJ is near-singular. The first step alone takes the
+    From (1, 10, 1) the model is nearly constant past t ~ 0.5, so the columns of J for a
+    and c are nearly parallel and J^T J is near-singular. The first step alone takes the
     cost from 6.6 to 9.3e+85. This is not a defect to be patched: it is the motivation
     for Levenberg-Marquardt, and a test that records it stops anyone "fixing" GN into
     something that hides it.
@@ -220,7 +220,7 @@ def test_gauss_newton_diverges_from_the_hard_start() -> None:
 def test_the_first_gauss_newton_step_from_the_hard_start_is_catastrophic() -> None:
     """The mechanism behind the previous test, isolated from the loop.
 
-    Nothing in Gauss-Newton limits the length of δ. Notebook 2 solved exactly this
+    Nothing in Gauss-Newton limits the length of delta. Notebook 2 solved exactly this
     problem for gradient descent with a line search; LM solves it a different way.
     """
     problem = _exp_problem()
@@ -236,7 +236,7 @@ def test_the_first_gauss_newton_step_from_the_hard_start_is_catastrophic() -> No
 def test_gauss_newton_reports_which_failure_happened() -> None:
     """Two structurally different failures, and the `message` has to tell them apart.
 
-    A near-singular JᵀJ is refused by the day-4 Cholesky ("normal equations failed"); an
+    A near-singular J^T J is refused by the day-4 Cholesky ("normal equations failed"); an
     unbounded step walks the iterate off the edge of float64 ("iterates left the finite
     range"). Diagnosing the first as the second sends you looking in the wrong place.
     """
@@ -273,7 +273,7 @@ def test_gauss_newton_does_nothing_when_it_starts_at_the_solution() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 3 — Levenberg-Marquardt
+# Exercise 3 - Levenberg-Marquardt
 # --------------------------------------------------------------------------- #
 
 
@@ -288,14 +288,14 @@ def test_levenberg_marquardt_survives_the_start_that_killed_gauss_newton() -> No
     np.testing.assert_allclose(result.x, EXP_TRUTH, atol=1e-8)
 
 
-#: J with two identical columns. JᵀJ = [[14, 14], [14, 14]] in exact integer arithmetic,
-#: so the second Cholesky pivot is exactly 0 — singular, not merely ill-conditioned, and
+#: J with two identical columns. J^T J = [[14, 14], [14, 14]] in exact integer arithmetic,
+#: so the second Cholesky pivot is exactly 0 - singular, not merely ill-conditioned, and
 #: the same on every platform.
 DEGENERATE_J = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
 
 
 class RankDeficient(ILeastSquaresProblem):
-    """r(x) = J·x − b with the two parameters genuinely indistinguishable.
+    """r(x) = J*x - b with the two parameters genuinely indistinguishable.
 
     Only the sum x0 + x1 is determined; the cost is minimised at 17/14, along a whole
     line of equally good parameter vectors.
@@ -312,17 +312,17 @@ class RankDeficient(ILeastSquaresProblem):
 
 
 def test_damping_makes_any_normal_matrix_factorizable() -> None:
-    """The guarantee, stated directly on the matrices: JᵀJ ⪰ 0, so JᵀJ + λI ≻ 0 for λ > 0.
+    """The guarantee, stated directly on the matrices: J^T J >= 0, so J^T J + lam*I > 0 for lam > 0.
 
     This is what makes LM's solve exception-free by construction, and it is why the
     reference implementation has no `except NotPositiveDefiniteError` there to catch
-    anything with — an unreachable handler is a claim the reader cannot check.
+    anything with - an unreachable handler is a claim the reader cannot check.
     """
     normal = DEGENERATE_J.T @ DEGENERATE_J
     with pytest.raises(NotPositiveDefiniteError):
         cholesky(normal)
     for lam in (1e-12, 1e-6, 1e-3, 1.0, 1e6):
-        cholesky(normal + lam * np.eye(2))          # must not raise, for any λ > 0
+        cholesky(normal + lam * np.eye(2))          # must not raise, for any lam > 0
 
 
 def test_cholesky_can_never_fail_inside_levenberg_marquardt() -> None:
@@ -340,8 +340,8 @@ def test_cholesky_can_never_fail_inside_levenberg_marquardt() -> None:
 def test_levenberg_marquardt_rejects_a_step_that_makes_things_worse() -> None:
     """The gain ratio, observed from outside: on a rejection x does not move.
 
-    From the notebook's hard start the first two attempts are rejected (ρ = −85 and
-    −1.5), so the first two recorded events must sit at the same cost and report a step
+    From the notebook's hard start the first two attempts are rejected (rho = -85 and
+    -1.5), so the first two recorded events must sit at the same cost and report a step
     length of zero.
     """
     t = np.linspace(0.0, 4.0, 60)
@@ -357,7 +357,7 @@ def test_levenberg_marquardt_rejects_a_step_that_makes_things_worse() -> None:
 
 
 def test_lambda_falls_when_the_model_is_good_so_lm_becomes_gauss_newton() -> None:
-    """From an easy start λ collapses and LM costs exactly what GN costs.
+    """From an easy start lam collapses and LM costs exactly what GN costs.
 
     If damping cost anything on easy problems nobody would use LM, so this equality of
     iteration counts is a real requirement and not a coincidence.
@@ -393,7 +393,7 @@ def test_levenberg_marquardt_matches_scipy() -> None:
 
 
 def test_the_same_two_classes_fit_a_different_model() -> None:
-    """`GaussianPeak` is a change of data, not of code — the payoff of the interface."""
+    """`GaussianPeak` is a change of data, not of code - the payoff of the interface."""
     t = np.linspace(-3.0, 5.0, 80)
     y = 3.0 * np.exp(-((t - 1.2) ** 2) / (2 * 0.8**2))
     result = LevenbergMarquardt(CholeskySolver(), max_iter=300).minimize(
@@ -406,9 +406,9 @@ def test_the_same_two_classes_fit_a_different_model() -> None:
 def test_levenberg_marquardt_converges_to_a_worse_minimum() -> None:
     """`converged=True` means the gradient is small *here*. It never means "best".
 
-    Starting the frequency at ω = 12 instead of the true 3, LM reports success after 37
-    iterations at a cost 178 times worse than the answer found from ω = 3. Both points
-    are genuine local minima — ‖Jᵀr‖ is below 1e-8 at each — so no stopping rule could
+    Starting the frequency at omega = 12 instead of the true 3, LM reports success after 37
+    iterations at a cost 178 times worse than the answer found from omega = 3. Both points
+    are genuine local minima - ||J^T r|| is below 1e-8 at each - so no stopping rule could
     tell them apart. Only the cost column can, and the only defence is a grid of starts.
     """
     problem = _sinusoid()
@@ -424,10 +424,11 @@ def test_levenberg_marquardt_converges_to_a_worse_minimum() -> None:
 def test_the_sign_of_omega_is_not_identifiable() -> None:
     """A separate lesson that looks like the same one and is not.
 
-    (a, ω, φ) and (−a, −ω, −φ) describe the *same* curve: −a·sin(−ωt − φ) = a·sin(ωt + φ)
-    for every t. So two different parameter vectors give identical predictions and
-    identical cost, the minimum is not unique, and no optimizer can prefer one of them.
-    The fix belongs in the model — constrain ω > 0 — not in the optimizer.
+    (a, omega, phi) and (-a, -omega, -phi) describe the *same* curve:
+    -a*sin(-omega*t - phi) = a*sin(omega*t + phi) for every t. So two different
+    parameter vectors give identical predictions and identical cost, the minimum is
+    not unique, and no optimizer can prefer one of them.
+    The fix belongs in the model - constrain omega > 0 - not in the optimizer.
     """
     problem = _sinusoid()
     marquardt = LevenbergMarquardt(CholeskySolver(), max_iter=300)

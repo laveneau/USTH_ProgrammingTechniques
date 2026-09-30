@@ -1,4 +1,4 @@
-"""Every `IDirectionRule` must return a descent direction: gᵀd < 0 whenever g ≠ 0.
+"""Every `IDirectionRule` must return a descent direction: g^T d < 0 whenever g != 0.
 
 The same test over every rule, which is what makes swapping one for another safe. Add
 your rules to `RULES` as you write them; the day-4 entries are skipped until the classes
@@ -34,7 +34,7 @@ CASES = [(r, p) for r in DAY2_RULES for p in PROBLEMS]
 @pytest.mark.day2
 @pytest.mark.parametrize("rule_name,problem_name", CASES)
 def test_direction_is_a_descent_direction(rule_name: str, problem_name: str) -> None:
-    """gᵀd < 0, or the line search is being asked to walk uphill."""
+    """g^T d < 0, or the line search is being asked to walk uphill."""
     make_problem, x = PROBLEMS[problem_name]
     problem = make_problem()
     rule = DAY2_RULES[rule_name]()

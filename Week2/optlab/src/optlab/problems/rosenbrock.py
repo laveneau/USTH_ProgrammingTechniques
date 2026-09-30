@@ -7,11 +7,11 @@ from ..types import Mat, Vec
 
 
 class Rosenbrock(IObjective, ITwiceDifferentiable):
-    """f(x) = Σ [100(x_{i+1} − x_i²)² + (1 − x_i)²], minimized at x = (1, …, 1).
+    """f(x) = sum [100(x_{i+1} - x_i^2)^2 + (1 - x_i)^2], minimized at x = (1, ..., 1).
 
     A curved valley: the floor is cheap to reach and then almost flat along a bend, so
     steepest descent crawls. Not convex, so the Hessian is indefinite away from the
-    valley — which is what makes it a good stress test for damped Newton on day 4.
+    valley - which is what makes it a good stress test for damped Newton on day 4.
     """
 
     def value(self, x: Vec) -> float:

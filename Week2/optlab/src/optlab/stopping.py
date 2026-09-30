@@ -5,7 +5,7 @@ from .results import StepEvent
 
 
 class GradientNormBelow(IStoppingCriterion):
-    """Stop once ‖∇f‖ <= tol. The only criterion here that means genuine convergence."""
+    """Stop once ||grad f|| <= tol. The only criterion here that means genuine convergence."""
 
     def __init__(self, tol: float = 1e-6) -> None:
         self.tol = tol

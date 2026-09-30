@@ -1,4 +1,4 @@
-"""INSTRUCTOR SCRIPT — run once before the course, not by students.
+"""INSTRUCTOR SCRIPT - run once before the course, not by students.
 
 Writes `data/*.npz` so that the clone is self-contained and the week needs no network.
 This is the only file allowed to import scikit-learn for data (it is outside `src/`).

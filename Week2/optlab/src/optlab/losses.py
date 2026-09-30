@@ -1,7 +1,7 @@
 """Pointwise losses: one class per likelihood.
 
 Each is the negative log-likelihood of a distribution, up to constants:
-squared error ↔ Gaussian, logistic ↔ Bernoulli, Poisson ↔ Poisson counts.
+squared error <-> Gaussian, logistic <-> Bernoulli, Poisson <-> Poisson counts.
 Huber is not a likelihood but a robustification of the Gaussian one.
 """
 
@@ -12,7 +12,7 @@ from .types import Vec
 
 
 class SquaredError(IPointwiseLoss):
-    """[DAY 1] φ(z, y) = ½(z − y)². The Gaussian negative log-likelihood."""
+    """[DAY 1] phi(z, y) = 1/2(z - y)^2. The Gaussian negative log-likelihood."""
 
     def value(self, z: Vec, y: Vec) -> Vec:
         raise NotImplementedError("[DAY 1] lab 2")
@@ -25,7 +25,7 @@ class SquaredError(IPointwiseLoss):
 
 
 class LogisticNLL(IPointwiseLoss):
-    """[DAY 1] φ(z, y) = log(1 + e^z) − y·z, for y ∈ {0, 1}.
+    """[DAY 1] phi(z, y) = log(1 + e^z) - y*z, for y in {0, 1}.
 
     Watch the overflow: `log(1 + exp(1000))` is `inf` computed naively and `1000`
     computed properly. Use the stable form of softplus. The trap is on the day-1 slide
@@ -45,11 +45,11 @@ class LogisticNLL(IPointwiseLoss):
 class Huber(IPointwiseLoss):
     """[DAY 6] Quadratic near zero, linear beyond `delta`.
 
-    Bounded influence, so a gross outlier cannot dominate the fit — yet still smooth,
+    Bounded influence, so a gross outlier cannot dominate the fit - yet still smooth,
     unlike the L1 *penalty* of the same day. Note where each non-smoothness lives:
     Huber is smooth in the residual, L1 is non-smooth in the parameters.
 
-    As `delta → ∞` it must reduce to `SquaredError`; a test checks exactly that.
+    As `delta -> inf` it must reduce to `SquaredError`; a test checks exactly that.
     """
 
     def __init__(self, delta: float = 1.0) -> None:
@@ -66,7 +66,7 @@ class Huber(IPointwiseLoss):
 
 
 class PoissonNLL(IPointwiseLoss):
-    """[DAY 6] φ(z, y) = e^z − y·z. Counts with a log link.
+    """[DAY 6] phi(z, y) = e^z - y*z. Counts with a log link.
 
     Writing this is the payoff of the open/closed principle: it is a new `IPointwiseLoss`,
     so gradient descent, Newton and ridge all work on it without a line changing anywhere

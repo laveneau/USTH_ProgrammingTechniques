@@ -21,7 +21,7 @@ pytestmark = pytest.mark.day2
 
 
 class Squares(IObjective):
-    """f(x) = ‖x‖², so ∇f = 2x. The hand example from the lecture."""
+    """f(x) = ||x||^2, so grad f = 2x. The hand example from the lecture."""
 
     def value(self, x: Vec) -> float:
         return float(x @ x)
@@ -33,7 +33,7 @@ class Squares(IObjective):
 class Inconsistent(IObjective):
     """A flat value with a non-zero gradient: no step can ever decrease it.
 
-    Not a realistic objective — it exists to drive `Armijo` to exhaust its budget, which
+    Not a realistic objective - it exists to drive `Armijo` to exhaust its budget, which
     is the only way to check that `LineSearchFailed` is raised and then caught.
     """
 
@@ -50,7 +50,7 @@ def _event(iteration: int = 1, grad_norm: float = 1.0) -> StepEvent:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — stopping criteria
+# Exercise 1 - stopping criteria
 # --------------------------------------------------------------------------- #
 
 
@@ -75,7 +75,7 @@ def test_any_of_fires_when_either_does() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — observer
+# Exercise 1 - observer
 # --------------------------------------------------------------------------- #
 
 
@@ -90,7 +90,7 @@ def test_history_records_what_it_is_given() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — direction rules
+# Exercise 1 - direction rules
 # --------------------------------------------------------------------------- #
 
 
@@ -114,7 +114,7 @@ def test_heavy_ball_remembers_the_previous_direction() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 / 2 — line searches
+# Exercise 1 / 2 - line searches
 # --------------------------------------------------------------------------- #
 
 
@@ -124,7 +124,7 @@ def test_fixed_step_returns_its_alpha_whatever_it_is_handed() -> None:
 
 
 def test_armijo_hand_example_from_the_lecture() -> None:
-    """f(x) = x² at x = 1: α = 1 lands back at 1 and is rejected; α = 0.5 is accepted."""
+    """f(x) = x^2 at x = 1: alpha = 1 lands back at 1 and is rejected; alpha = 0.5 is accepted."""
     x, g = np.array([1.0]), np.array([2.0])
     assert Armijo(alpha0=1.0, rho=0.5).step(Squares(), x, g, -g) == pytest.approx(0.5)
 
@@ -156,7 +156,7 @@ def test_armijo_rejects_a_direction_that_does_not_descend() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 / 2 — the loop itself
+# Exercise 1 / 2 - the loop itself
 # --------------------------------------------------------------------------- #
 
 
@@ -222,7 +222,7 @@ def test_swapping_the_line_search_needs_no_change_to_the_loop() -> None:
 
 
 def test_momentum_beats_steepest_descent_on_an_ill_conditioned_quadratic() -> None:
-    """The measurement of Exercise 3, as a test: √κ instead of κ."""
+    """The measurement of Exercise 3, as a test: sqrt(kappa) instead of kappa."""
     kappa, mu, L = 100.0, 1.0, 100.0
     problem = Quadratic.ill_conditioned(2, kappa)
     beta = ((np.sqrt(kappa) - 1) / (np.sqrt(kappa) + 1)) ** 2

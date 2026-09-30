@@ -12,11 +12,11 @@ from ..types import Mat, Vec
 
 
 class ExpDecay(ILeastSquaresProblem):
-    """y = a·exp(−b·t) + c, with parameters x = (a, b, c).
+    """y = a*exp(-b*t) + c, with parameters x = (a, b, c).
 
     The day's running example. From a good start Gauss-Newton converges in a handful of
-    iterations; from b = 10 the model is nearly constant past t ≈ 0.5, so a and b are
-    poorly determined, JᵀJ is near-singular, and GN drifts while LM copes. Reproducing
+    iterations; from b = 10 the model is nearly constant past t ~ 0.5, so a and b are
+    poorly determined, J^T J is near-singular, and GN drifts while LM copes. Reproducing
     that contrast is the point of the lab.
     """
 
@@ -25,16 +25,16 @@ class ExpDecay(ILeastSquaresProblem):
         self.y = y
 
     def residuals(self, x: Vec) -> Vec:
-        """model(t; x) − y."""
+        """model(t; x) - y."""
         raise NotImplementedError("[DAY 5] lab 1")
 
     def jacobian(self, x: Vec) -> Mat:
-        """∂r/∂(a, b, c), of shape (m, 3)."""
+        """dr/d(a, b, c), of shape (m, 3)."""
         raise NotImplementedError("[DAY 5] lab 1")
 
 
 class GaussianPeak(ILeastSquaresProblem):
-    """y = a·exp(−(t − mu)² / (2σ²)), with parameters x = (a, mu, sigma)."""
+    """y = a*exp(-(t - mu)^2 / (2*sigma^2)), with parameters x = (a, mu, sigma)."""
 
     def __init__(self, t: Vec, y: Vec) -> None:
         self.t = t
@@ -48,10 +48,10 @@ class GaussianPeak(ILeastSquaresProblem):
 
 
 class Sinusoid(ILeastSquaresProblem):
-    """y = a·sin(omega·t + phi), with parameters x = (a, omega, phi).
+    """y = a*sin(omega*t + phi), with parameters x = (a, omega, phi).
 
     The counterexample: start with omega far from the truth and LM converges neatly to a
-    *local* minimum. "Converged" does not mean "best" — neither GN nor LM is a global
+    *local* minimum. "Converged" does not mean "best" - neither GN nor LM is a global
     method, and nothing in this course is.
     """
 

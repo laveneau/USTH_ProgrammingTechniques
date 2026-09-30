@@ -1,4 +1,4 @@
-"""PLACEHOLDER — replace this file with your Week 1 forward-mode module.
+"""PLACEHOLDER - replace this file with your Week 1 forward-mode module.
 
 Your Week 1 version already provides everything needed here:
 
@@ -24,7 +24,7 @@ from ..types import Vec
 
 @dataclass(frozen=True)
 class Dual:
-    """a + b·ε with ε² = 0, so that f(a + bε) = f(a) + f'(a)·b·ε."""
+    """a + b*eps with eps^2 = 0, so that f(a + b*eps) = f(a) + f'(a)*b*eps."""
 
     val: float
     der: float
@@ -36,5 +36,5 @@ def derivative(f: Callable[[Dual], Dual], x: float) -> float:
 
 
 def gradient_forward(f: Callable[[Vec], Dual], x: Vec) -> Vec:
-    """The full gradient, at a cost of n sweeps — which is why reverse mode exists."""
+    """The full gradient, at a cost of n sweeps - which is why reverse mode exists."""
     raise NotImplementedError("copy your Week 1 autodiff/dual.py here")

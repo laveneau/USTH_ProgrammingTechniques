@@ -1,12 +1,12 @@
 """The generalized linear model loss: one class for every GLM.
 
-`GLMLoss` does not know which likelihood it is fitting — it receives an `IPointwiseLoss`
+`GLMLoss` does not know which likelihood it is fitting - it receives an `IPointwiseLoss`
 and composes with it. Linear regression, logistic regression, Poisson regression and
 robust regression are all this one class with a different object injected. That is
 dependency inversion, and it is why day 6 gets Poisson and Huber almost for free.
 
 There is deliberately no `lambda` parameter here. Regularization is a separate object
-(`IRegularizer`, day 4) wrapped around this one by `RegularizedObjective` — a penalty is
+(`IRegularizer`, day 4) wrapped around this one by `RegularizedObjective` - a penalty is
 not part of the likelihood.
 """
 
@@ -18,9 +18,9 @@ from ..types import Index, Mat, Vec
 
 
 class GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective):
-    """L(w) = (1/n) Σ φ(xᵢᵀw, yᵢ) for an injected pointwise loss φ.
+    """L(w) = (1/n) sum phi(x_i^T w, y_i) for an injected pointwise loss phi.
 
-    Three interfaces at once — the multiple inheritance of Week 1, Unit 1. Each caller
+    Three interfaces at once - the multiple inheritance of Week 1, Unit 1. Each caller
     sees only the one it needs: the descent loop an `IObjective`, `SGD` a
     `IBatchObjective`, `NewtonDirection` an `ITwiceDifferentiable`.
     """
@@ -31,20 +31,20 @@ class GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective):
         self.pointwise = pointwise
 
     def value(self, w: Vec) -> float:
-        """[DAY 1] The mean of φ over the samples."""
+        """[DAY 1] The mean of phi over the samples."""
         raise NotImplementedError("[DAY 1] lab 2")
 
     def gradient(self, w: Vec) -> Vec:
-        """[DAY 1] Xᵀ·φ'(Xw, y) / n."""
+        """[DAY 1] X^T*phi'(Xw, y) / n."""
         raise NotImplementedError("[DAY 1] lab 2")
 
     def hessian(self, w: Vec) -> Mat:
-        """[DAY 4] XᵀDX / n with D = diag(φ''(Xw, y)).
+        """[DAY 4] X^T DX / n with D = diag(phi''(Xw, y)).
 
         For squared error D = I and one Newton step solves the normal equations exactly.
-        For the logistic loss D = diag(σ(1−σ)) and Newton *is* iteratively reweighted
-        least squares — the algorithm statisticians use to fit GLMs. This matrix is also
-        the observed Fisher information, so its inverse estimates cov(ŵ).
+        For the logistic loss D = diag(sigma(1-sigma)) and Newton *is* iteratively reweighted
+        least squares - the algorithm statisticians use to fit GLMs. This matrix is also
+        the observed Fisher information, so its inverse estimates cov(w_hat).
         """
         raise NotImplementedError("[DAY 4] lab 2")
 

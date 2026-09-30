@@ -29,7 +29,7 @@ def load(name: str) -> tuple[np.ndarray, np.ndarray]:
 def standardize(X: np.ndarray) -> np.ndarray:
     """Centre and scale each column to unit variance.
 
-    Day 1 measures the condition number of XᵀX/n before and after this, on raw
+    Day 1 measures the condition number of X^T X/n before and after this, on raw
     California housing: conditioning is partly a property of the data, and a great deal
     of optimization difficulty is created by not doing this.
     """

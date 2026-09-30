@@ -1,6 +1,6 @@
 """Penalties, kept strictly separate from the data-fit loss.
 
-Under the MAP reading a penalty is a prior: ½λ‖w‖² is a Gaussian prior, λ‖w‖₁ a Laplace
+Under the MAP reading a penalty is a prior: 1/2*lam||w||^2 is a Gaussian prior, lam||w||_1 a Laplace
 one. The Laplace prior has a spike at zero, which is why L1 produces exact zeros and
 ridge does not.
 """
@@ -12,7 +12,7 @@ from .types import Vec
 
 
 class NoRegularizer(IRegularizer):
-    """[DAY 4] r(w) = 0. The neutral element, so unregularized fitting is not a special case."""
+    """[DAY 4] Omega(w) = 0. The neutral element, so unregularized fitting is not a special case."""
 
     def value(self, w: Vec) -> float:
         raise NotImplementedError("[DAY 4] lab 4")
@@ -20,15 +20,15 @@ class NoRegularizer(IRegularizer):
     def gradient(self, w: Vec) -> Vec:
         raise NotImplementedError("[DAY 4] lab 4")
 
-    def prox(self, w: Vec, t: float) -> Vec:
+    def prox(self, w: Vec, alpha: float) -> Vec:
         raise NotImplementedError("[DAY 4] lab 4")
 
 
 class L2(IRegularizer):
-    """[DAY 4] r(w) = ½λ‖w‖². Ridge. Smooth, so ordinary descent and Newton handle it.
+    """[DAY 4] Omega(w) = 1/2*lam||w||^2. Ridge. Smooth, so ordinary descent and Newton handle it.
 
-    Its prox is the shrinkage w / (1 + λt). Adding λI to the Hessian also makes it
-    unconditionally positive definite, so Cholesky can no longer fail — the same trick
+    Its prox is the shrinkage w / (1 + lam*alpha). Adding lam*I to the Hessian also makes it
+    unconditionally positive definite, so Cholesky can no longer fail - the same trick
     LM uses on day 5.
     """
 
@@ -41,16 +41,16 @@ class L2(IRegularizer):
     def gradient(self, w: Vec) -> Vec:
         raise NotImplementedError("[DAY 4] lab 4")
 
-    def prox(self, w: Vec, t: float) -> Vec:
+    def prox(self, w: Vec, alpha: float) -> Vec:
         raise NotImplementedError("[DAY 4] lab 4")
 
 
 class L1(IRegularizer):
-    """[DAY 6] r(w) = λ‖w‖₁. Lasso. NOT differentiable at zero.
+    """[DAY 6] Omega(w) = lam||w||_1. Lasso. NOT differentiable at zero.
 
-    `gradient` must raise `NotImplementedError` — that is not a gap, it is the contract.
+    `gradient` must raise `NotImplementedError` - that is not a gap, it is the contract.
     The kink at zero is precisely what pins coefficients to exactly zero, and the way
-    past it is `prox`, the soft-threshold sign(v)·max(|v| − λt, 0).
+    past it is `prox`, the soft-threshold sign(v)*max(|v| - lam*alpha, 0).
     """
 
     def __init__(self, lam: float = 1.0) -> None:
@@ -62,25 +62,27 @@ class L1(IRegularizer):
     def gradient(self, w: Vec) -> Vec:
         raise NotImplementedError("L1 is not differentiable at 0; use prox()")
 
-    def prox(self, w: Vec, t: float) -> Vec:
+    def prox(self, w: Vec, alpha: float) -> Vec:
         raise NotImplementedError("[DAY 6] lab 1")
 
 
 class ElasticNet(IRegularizer):
-    """[DAY 6] λ(α‖w‖₁ + ½(1−α)‖w‖²). Sparsity plus the stability of ridge.
+    """[DAY 6] Omega(w) = lam(nu||w||_1 + 1/2(1-nu)||w||^2), where nu is `l1_ratio`.
+
+    Sparsity plus the stability of ridge.
 
     Its prox composes the two: soft-threshold, then shrink.
     """
 
-    def __init__(self, lam: float = 1.0, alpha: float = 0.5) -> None:
+    def __init__(self, lam: float = 1.0, l1_ratio: float = 0.5) -> None:
         self.lam = lam
-        self.alpha = alpha
+        self.l1_ratio = l1_ratio
 
     def value(self, w: Vec) -> float:
         raise NotImplementedError("[DAY 6] lab 1")
 
     def gradient(self, w: Vec) -> Vec:
-        raise NotImplementedError("not differentiable for alpha > 0; use prox()")
+        raise NotImplementedError("not differentiable for l1_ratio > 0; use prox()")
 
-    def prox(self, w: Vec, t: float) -> Vec:
+    def prox(self, w: Vec, alpha: float) -> Vec:
         raise NotImplementedError("[DAY 6] lab 1")

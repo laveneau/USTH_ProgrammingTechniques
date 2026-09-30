@@ -22,7 +22,7 @@ class FixedStep(ILineSearch):
 class Armijo(ILineSearch):
     """Backtracking until the sufficient-decrease condition holds:
 
-        f(x + αd) <= f(x) + c1·α·gᵀd
+        f(x + alpha*d) <= f(x) + c1*alpha*g^T d
 
     Start at `alpha0`, multiply by `rho` on rejection, give up after `max_backtracks`
     and raise `LineSearchFailed`. The optimizer catches that and reports

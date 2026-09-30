@@ -1,8 +1,8 @@
-"""Every abstract base class of optlab. PROVIDED — do not edit.
+"""Every abstract base class of optlab. PROVIDED - do not edit.
 
 These are the contracts of the week. You write implementations that inherit them; you
-never change an interface. An implementation may inherit several — for example
-`GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)` — which is the multiple
+never change an interface. An implementation may inherit several - for example
+`GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)` - which is the multiple
 inheritance of Week 1, Unit 1, used for real.
 
 Structurally these are the duck-typed contracts of Week 1, Unit 2. `typing.Protocol` is
@@ -18,7 +18,7 @@ Every line of behaviour behind these contracts is one you write.
 
 Interface segregation is the point: `DescentOptimizer` asks only for an `IObjective`,
 `SGD` only for an `IBatchObjective`, `NewtonDirection` adds `ITwiceDifferentiable`, and
-`GaussNewton` depends on `ILeastSquaresProblem` — which is deliberately *not* an
+`GaussNewton` depends on `ILeastSquaresProblem` - which is deliberately *not* an
 `IObjective`. No implementation is ever forced to raise `NotImplementedError` to satisfy
 a method it does not have.
 """
@@ -47,7 +47,7 @@ class IObjective(ABC):
 
     @abstractmethod
     def gradient(self, x: Vec) -> Vec:
-        """∇f(x), with the same shape as `x`."""
+        """grad f(x), with the same shape as `x`."""
 
 
 class ITwiceDifferentiable(ABC):
@@ -58,11 +58,11 @@ class ITwiceDifferentiable(ABC):
 
     @abstractmethod
     def hessian(self, x: Vec) -> Mat:
-        """∇²f(x), symmetric of shape (n, n)."""
+        """grad^2 f(x), symmetric of shape (n, n)."""
 
 
 class IBatchObjective(ABC):
-    """A finite-sum objective f(x) = (1/n) Σ fᵢ(x) whose terms can be sampled.
+    """A finite-sum objective f(x) = (1/n) sum f_i(x) whose terms can be sampled.
 
     Mixed into an `IObjective`; required by `SGD` and `Adam`. The batch gradient must be
     an unbiased estimate of the full gradient: averaging `batch_gradient` over all
@@ -80,31 +80,31 @@ class IBatchObjective(ABC):
 
 
 class IPointwiseLoss(ABC):
-    """A per-sample loss φ(z, y) and its first two derivatives with respect to z.
+    """A per-sample loss phi(z, y) and its first two derivatives with respect to z.
 
     `z` is the linear predictor Xw, `y` the observation. Vectorized: all three take and
-    return arrays of the same shape. This is the object `GLMLoss` is injected with —
+    return arrays of the same shape. This is the object `GLMLoss` is injected with -
     one loss class per likelihood, one GLM class for all of them.
     """
 
     @abstractmethod
     def value(self, z: Vec, y: Vec) -> Vec:
-        """φ(z, y), elementwise."""
+        """phi(z, y), elementwise."""
 
     @abstractmethod
     def d1(self, z: Vec, y: Vec) -> Vec:
-        """∂φ/∂z, elementwise."""
+        """d*phi/dz, elementwise."""
 
     @abstractmethod
     def d2(self, z: Vec, y: Vec) -> Vec:
-        """∂²φ/∂z², elementwise. Non-negative for the convex losses of this course."""
+        """d^2phi/dz^2, elementwise. Non-negative for the convex losses of this course."""
 
 
 class ILeastSquaresProblem(ABC):
-    """A nonlinear least-squares problem: minimize ½‖r(x)‖².
+    """A nonlinear least-squares problem: minimize 1/2||r(x)||^2.
 
     Deliberately NOT an `IObjective`. Gauss-Newton and Levenberg-Marquardt need the
-    residuals and the Jacobian separately — collapsing them into value/gradient would
+    residuals and the Jacobian separately - collapsing them into value/gradient would
     throw away the structure that makes those methods work. This is interface
     segregation as a design decision, not an accident.
     """
@@ -115,7 +115,7 @@ class ILeastSquaresProblem(ABC):
 
     @abstractmethod
     def jacobian(self, x: Vec) -> Mat:
-        """J(x) = ∂r/∂x, of shape (m, n)."""
+        """J(x) = dr/dx, of shape (m, n)."""
 
 
 # --------------------------------------------------------------------------- #
@@ -124,28 +124,28 @@ class ILeastSquaresProblem(ABC):
 
 
 class IRegularizer(ABC):
-    """A penalty r(w), separate from the data-fit loss.
+    """A penalty Omega(w), separate from the data-fit loss.
 
     `gradient` is allowed to raise for a non-smooth penalty (L1 does): that is exactly
     why `prox` exists and why proximal methods ask only for `prox`. The contract test
     checks the defining identity of the proximal operator,
 
-        prox_{t·r}(v) = argmin_w  ½‖w − v‖² + t·r(w)
+        prox_{alpha*Omega}(v) = argmin_w  1/2||w - v||^2 + alpha*Omega(w)
 
     numerically on small examples.
     """
 
     @abstractmethod
     def value(self, w: Vec) -> float:
-        """r(w)."""
+        """Omega(w)."""
 
     @abstractmethod
     def gradient(self, w: Vec) -> Vec:
-        """∇r(w). May raise `NotImplementedError` if r is not differentiable."""
+        """grad Omega(w). May raise `NotImplementedError` if Omega is not differentiable."""
 
     @abstractmethod
-    def prox(self, w: Vec, t: float) -> Vec:
-        """The proximal operator of t·r evaluated at w."""
+    def prox(self, w: Vec, alpha: float) -> Vec:
+        """The proximal operator of alpha*Omega evaluated at w."""
 
 
 # --------------------------------------------------------------------------- #
@@ -157,7 +157,7 @@ class IDirectionRule(ABC):
     """Chooses the search direction at the current point.
 
     May be stateful (`HeavyBall` keeps the previous step). A direction must be a descent
-    direction: gᵀd < 0 whenever g ≠ 0.
+    direction: g^T d < 0 whenever g != 0.
     """
 
     @abstractmethod
@@ -170,7 +170,7 @@ class ILineSearch(ABC):
 
     @abstractmethod
     def step(self, objective: IObjective, x: Vec, g: Vec, d: Vec) -> float:
-        """The step length α > 0 to take along `d`.
+        """The step length alpha > 0 to take along `d`.
 
         Raises `LineSearchFailed` if no acceptable step was found.
         """
@@ -201,7 +201,7 @@ class ILinearSolver(ABC):
     """Solves A x = b for a symmetric positive definite A.
 
     One abstraction, reused by `NewtonDirection`, `GaussNewton` and
-    `LevenbergMarquardt` — which is why a conjugate-gradient solver could be dropped in
+    `LevenbergMarquardt` - which is why a conjugate-gradient solver could be dropped in
     later without editing any of them.
     """
 

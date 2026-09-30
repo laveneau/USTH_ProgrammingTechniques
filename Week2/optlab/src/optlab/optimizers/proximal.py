@@ -1,8 +1,8 @@
 """[DAY 6] Optimizing a sum of a smooth part and a non-smooth one.
 
-Gradient descent cannot minimize ‖w‖₁: it is not differentiable where the solution
+Gradient descent cannot minimize ||w||_1: it is not differentiable where the solution
 wants to be. The proximal gradient method takes a gradient step on the smooth part and
-then applies the prox of the penalty, which for L1 is the soft-threshold — and the
+then applies the prox of the penalty, which for L1 is the soft-threshold - and the
 threshold is what sets coefficients to exactly zero rather than merely small.
 
 This optimizer needs `IRegularizer.prox` and nothing else. It never calls `gradient` on
@@ -17,10 +17,10 @@ from ..types import Vec
 
 
 class ProximalGradient(IOptimizer):
-    """ISTA:  w⁺ = prox_{α·r}(w − α·∇f(w)),  requiring α <= 1/L.
+    """ISTA:  w^+ = prox_{alpha*Omega}(w - alpha*grad f(w)),  requiring alpha <= 1/L.
 
     With `accelerated=True`, FISTA: the same step with Nesterov momentum on the
-    extrapolation point, improving O(1/k) to O(1/k²).
+    extrapolation point, improving O(1/k) to O(1/k^2).
 
     Lasso is `ProximalGradient(smooth=GLMLoss(...), reg=L1(lam))`. Note what that reuses:
     `GLMLoss` unchanged, from day 1. A whole new estimator, no edit to an existing file.
@@ -47,8 +47,8 @@ class ProximalGradient(IOptimizer):
     def minimize(self, objective: object, x0: Vec) -> OptimizeResult:
         """`objective` is ignored: the smooth part and the penalty arrive in the constructor.
 
-        Convergence is measured on the proximal-gradient residual ‖w⁺ − w‖/α, not on a
-        gradient norm — the gradient of the full objective does not exist at the solution,
+        Convergence is measured on the proximal-gradient residual ||w^+ - w||/alpha, not on a
+        gradient norm - the gradient of the full objective does not exist at the solution,
         which is the whole point.
         """
         raise NotImplementedError("[DAY 6] lab 1")

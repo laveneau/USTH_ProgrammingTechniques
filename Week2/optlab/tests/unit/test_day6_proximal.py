@@ -41,12 +41,12 @@ def _sparse_problem(n: int = 60, d: int = 20, seed: int = 7) -> tuple[GLMLoss, f
     return smooth, step
 
 
-def _prox_objective(w: Vec, v: Vec, t: float, reg: IRegularizer) -> float:
-    return 0.5 * float(np.sum((w - v) ** 2)) + t * reg.value(w)
+def _prox_objective(w: Vec, v: Vec, alpha: float, reg: IRegularizer) -> float:
+    return 0.5 * float(np.sum((w - v) ** 2)) + alpha * reg.value(w)
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — the penalties
+# Exercise 1 - the penalties
 # --------------------------------------------------------------------------- #
 
 
@@ -56,37 +56,37 @@ def test_l1_value_is_the_scaled_one_norm() -> None:
 
 def test_elastic_net_value_mixes_the_two_norms() -> None:
     w = np.array([3.0, -4.0])
-    reg = ElasticNet(lam=2.0, alpha=0.25)
+    reg = ElasticNet(lam=2.0, l1_ratio=0.25)
     expected = 2.0 * (0.25 * 7.0 + 0.5 * 0.75 * 25.0)
     assert reg.value(w) == pytest.approx(expected)
 
 
 def test_elastic_net_at_the_two_extremes_is_l1_and_l2() -> None:
-    """alpha = 1 must *be* lasso and alpha = 0 must *be* ridge — value and prox both.
+    """l1_ratio = 1 must *be* lasso and l1_ratio = 0 must *be* ridge - value and prox both.
 
     A prox that composed the two operators in the wrong order, or that forgot to scale
-    the threshold by alpha, still passes the convexity contract test and fails here.
+    the threshold by l1_ratio, still passes the convexity contract test and fails here.
     """
     w = np.array([3.0, -0.4, 0.1, 0.0])
-    t = 0.7
+    alpha = 0.7
     lam = 0.5
 
-    lasso_like = ElasticNet(lam=lam, alpha=1.0)
+    lasso_like = ElasticNet(lam=lam, l1_ratio=1.0)
     assert lasso_like.value(w) == pytest.approx(L1(lam).value(w))
-    np.testing.assert_allclose(lasso_like.prox(w, t), L1(lam).prox(w, t))
+    np.testing.assert_allclose(lasso_like.prox(w, alpha), L1(lam).prox(w, alpha))
 
-    ridge_like = ElasticNet(lam=lam, alpha=0.0)
+    ridge_like = ElasticNet(lam=lam, l1_ratio=0.0)
     assert ridge_like.value(w) == pytest.approx(L2(lam).value(w))
-    np.testing.assert_allclose(ridge_like.prox(w, t), L2(lam).prox(w, t))
+    np.testing.assert_allclose(ridge_like.prox(w, alpha), L2(lam).prox(w, alpha))
 
 
 def test_elastic_net_prox_thresholds_then_shrinks() -> None:
     """Both effects must be visible: an exact zero *and* a shrunk survivor.
 
-    Soft-threshold alone would leave the survivor at |v| − tλα; shrink alone would
+    Soft-threshold alone would leave the survivor at |v| - alpha*lam*nu; shrink alone would
     produce no zero at all.
     """
-    reg = ElasticNet(lam=1.0, alpha=0.5)
+    reg = ElasticNet(lam=1.0, l1_ratio=0.5)
     out = reg.prox(np.array([3.0, 0.2]), 1.0)
     assert out[1] == 0.0
     assert out[0] == pytest.approx(2.5 / 1.5)
@@ -95,7 +95,8 @@ def test_elastic_net_prox_thresholds_then_shrinks() -> None:
 def test_every_prox_beats_its_neighbours() -> None:
     """The defining identity, on a coarse grid rather than at random.
 
-    prox_{t·r}(v) = argmin_w ½‖w − v‖² + t·r(w), so nothing nearby may score better.
+    prox_{alpha*Omega}(v) = argmin_w 1/2||w - v||^2 + alpha*Omega(w), so nothing
+    nearby may score better.
     """
     v = np.array([1.7, -0.3, 0.05, 0.0])
     for reg in (NoRegularizer(), L2(0.7), L1(0.5), ElasticNet(0.5, 0.6)):
@@ -109,13 +110,13 @@ def test_every_prox_beats_its_neighbours() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — ISTA and FISTA
+# Exercise 1 - ISTA and FISTA
 # --------------------------------------------------------------------------- #
 
 
 def test_proximal_gradient_ignores_its_objective_argument() -> None:
     """The smooth part and the penalty arrive in the constructor, so `minimize(None, x0)`
-    is the documented call — and `IOptimizer` still holds, which is the point."""
+    is the documented call - and `IOptimizer` still holds, which is the point."""
     smooth, step = _sparse_problem()
     result = ProximalGradient(smooth, L1(0.1), step=step, max_iter=50).minimize(None, np.zeros(20))
     assert result.x.shape == (20,)
@@ -150,7 +151,7 @@ def test_lasso_zeroes_exactly_while_ridge_only_shrinks() -> None:
     """The claim the whole day rests on, and the reason `==` is the right comparison.
 
     Same optimizer, same data, same step, same tolerance. The *only* thing that changes
-    is which `IRegularizer` object is passed in — which is the design point of day 4 and
+    is which `IRegularizer` object is passed in - which is the design point of day 4 and
     day 6 together.
     """
     smooth, step = _sparse_problem()
@@ -166,7 +167,7 @@ def test_lasso_zeroes_exactly_while_ridge_only_shrinks() -> None:
 
 
 def test_raising_lambda_far_enough_zeroes_everything() -> None:
-    """The end of the regularization path: past λ ≥ max|Xᵀy|/n nothing survives."""
+    """The end of the regularization path: past lam >= max|X^T y|/n nothing survives."""
     smooth, step = _sparse_problem()
     result = ProximalGradient(smooth, L1(100.0), step=step, max_iter=500, tol=1e-12).minimize(
         None, np.zeros(20)
@@ -175,7 +176,7 @@ def test_raising_lambda_far_enough_zeroes_everything() -> None:
 
 
 def test_ista_and_fista_agree_on_the_first_iteration() -> None:
-    """FISTA's extrapolation weight is (t₀ − 1)/t₁ = 0 at the start, so step 1 is shared.
+    """FISTA's extrapolation weight is (t_0 - 1)/t_1 = 0 at the start, so step 1 is shared.
 
     A momentum term that was already active on the first step would mean the state was
     initialised wrongly, and the two curves would part company immediately.
@@ -191,7 +192,7 @@ def test_ista_and_fista_agree_on_the_first_iteration() -> None:
 
 
 def test_fista_finds_the_support_sooner_than_ista() -> None:
-    """The real mechanism behind FISTA's advantage, which is not the O(1/k²) bound.
+    """The real mechanism behind FISTA's advantage, which is not the O(1/k^2) bound.
 
     While the support is wrong the method is searching a 20-dimensional problem; once it
     is right the problem has collapsed to 3 dimensions and is strongly convex there.
@@ -223,7 +224,7 @@ def test_the_recorded_value_is_the_full_objective() -> None:
     """f + r, not f alone.
 
     Reporting only the smooth half makes the penalty invisible in every convergence plot,
-    and notebook 6 §2 subtracts these values from F* directly.
+    and notebook 6 Sec. 2 subtracts these values from F* directly.
     """
     smooth, step = _sparse_problem()
     history = History()
@@ -254,10 +255,10 @@ def test_a_negative_tolerance_disables_the_early_return() -> None:
 
 
 def test_the_reported_residual_is_not_a_gradient_norm() -> None:
-    """At the solution ‖w⁺ − w‖/α is 0, while ∇F does not exist at all.
+    """At the solution ||w^+ - w||/alpha is 0, while grad F does not exist at all.
 
-    A student who stopped on ‖∇f(w)‖ of the smooth part alone would never converge: that
-    quantity is λ at every zeroed coordinate, not 0.
+    A student who stopped on ||grad f(w)|| of the smooth part alone would never converge: that
+    quantity is lam at every zeroed coordinate, not 0.
     """
     smooth, step = _sparse_problem()
     lam = 0.1
@@ -270,8 +271,8 @@ def test_the_reported_residual_is_not_a_gradient_norm() -> None:
 
 
 def test_lasso_matches_sklearn() -> None:
-    """The oracle. sklearn's `Lasso` minimises ‖y − Xw‖²/(2n) + α‖w‖₁, which is exactly
-    `GLMLoss(X, y, SquaredError())` plus `L1(α)` — no rescaling needed."""
+    """The oracle. sklearn's `Lasso` minimises ||y - Xw||^2/(2n) + alpha||w||_1, which is exactly
+    `GLMLoss(X, y, SquaredError())` plus `L1(alpha)` - no rescaling needed."""
     linear_model = pytest.importorskip("sklearn.linear_model")
     smooth, step = _sparse_problem()
     lam = 0.1
@@ -284,12 +285,12 @@ def test_lasso_matches_sklearn() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — Huber and Poisson
+# Exercise 2 - Huber and Poisson
 # --------------------------------------------------------------------------- #
 
 
 def test_huber_by_hand_on_both_sides_of_the_kink() -> None:
-    """delta = 1: inside, ½r²; outside, |r| − ½. At r = 2 that is 1.5, not 2."""
+    """delta = 1: inside, 1/2*r^2; outside, |r| - 1/2. At r = 2 that is 1.5, not 2."""
     loss = Huber(delta=1.0)
     z = np.array([0.5, 2.0, -3.0])
     y = np.zeros(3)
@@ -299,9 +300,9 @@ def test_huber_by_hand_on_both_sides_of_the_kink() -> None:
 
 
 def test_huber_is_continuously_differentiable_at_the_kink() -> None:
-    """C¹ is the property that makes Huber usable by every optimizer of the week.
+    """C^1 is the property that makes Huber usable by every optimizer of the week.
 
-    Value and first derivative match from both sides at r = ±delta; only the *second*
+    Value and first derivative match from both sides at r = +/-delta; only the *second*
     derivative jumps, which is why Newton still works but a finite-difference check of
     d2 must not be taken across the kink.
     """
@@ -317,7 +318,7 @@ def test_huber_is_continuously_differentiable_at_the_kink() -> None:
 
 
 def test_huber_bounds_the_influence_of_any_observation() -> None:
-    """|φ'| ≤ delta however far away the point is — that is the definition of robust."""
+    """|phi'| <= delta however far away the point is - that is the definition of robust."""
     loss = Huber(delta=1.5)
     z = np.array([1e3, -1e6, 0.0])
     y = np.zeros(3)
@@ -343,7 +344,7 @@ def test_huber_with_a_huge_delta_is_squared_error() -> None:
 def test_huber_survives_outliers_that_destroy_least_squares() -> None:
     """20 corrupted points out of 120, all on the right: the slope, not just the fit.
 
-    Squared error returns a slope of −0.065 where the truth is 2.0 — not degraded,
+    Squared error returns a slope of -0.065 where the truth is 2.0 - not degraded,
     reversed. Huber returns 1.70.
     """
     m = 120
@@ -362,7 +363,7 @@ def test_huber_survives_outliers_that_destroy_least_squares() -> None:
 
 
 def test_poisson_by_hand() -> None:
-    """φ(z, y) = e^z − y·z, so at z = 0 the value is 1 − 0 and the slope is 1 − y."""
+    """phi(z, y) = e^z - y*z, so at z = 0 the value is 1 - 0 and the slope is 1 - y."""
     loss = PoissonNLL()
     z = np.zeros(3)
     y = np.array([0.0, 1.0, 4.0])
@@ -372,7 +373,7 @@ def test_poisson_by_hand() -> None:
 
 
 def test_poisson_curvature_is_strictly_positive() -> None:
-    """e^z > 0 everywhere, so XᵀDX/n is positive definite and Newton needs no damping."""
+    """e^z > 0 everywhere, so X^T DX/n is positive definite and Newton needs no damping."""
     z = np.linspace(-5.0, 5.0, 41)
     assert np.all(PoissonNLL().d2(z, np.zeros_like(z)) > 0.0)
 

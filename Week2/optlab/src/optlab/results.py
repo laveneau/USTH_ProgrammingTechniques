@@ -1,4 +1,4 @@
-"""Result and event records. PROVIDED — do not edit.
+"""Result and event records. PROVIDED - do not edit.
 
 Both are frozen dataclasses: the `@dataclass` first met in the Week 1 autodiff project.
 Frozen because an observer must not be able to alter the history it is handed.

@@ -7,10 +7,11 @@ from ..types import Mat, Vec
 
 
 class Quadratic(IObjective, ITwiceDifferentiable):
-    """f(x) = ½xᵀAx − bᵀx, for symmetric positive definite A.
+    """f(x) = 1/2*x^T Ax - b^T x, for symmetric positive definite A.
 
     Everything about first-order methods is visible here: the gradient descent rate is
-    (κ−1)/(κ+1) and momentum improves it to (√κ−1)/(√κ+1), where κ = cond(A). Newton
+    (kappa-1)/(kappa+1) and momentum improves it to
+    (sqrt(kappa)-1)/(sqrt(kappa)+1), where kappa = cond(A). Newton
     reaches the minimum in exactly one step, because the quadratic model is exact.
     """
 
@@ -23,7 +24,7 @@ class Quadratic(IObjective, ITwiceDifferentiable):
         raise NotImplementedError("[DAY 1] lab 2")
 
     def gradient(self, x: Vec) -> Vec:
-        """[DAY 1] Ax − b."""
+        """[DAY 1] Ax - b."""
         raise NotImplementedError("[DAY 1] lab 2")
 
     def hessian(self, x: Vec) -> Mat:
@@ -35,6 +36,6 @@ class Quadratic(IObjective, ITwiceDifferentiable):
         """[DAY 1] A diagonal instance with condition number exactly `kappa`.
 
         Eigenvalues spaced logarithmically between 1 and `kappa`, and b = 0, so the
-        minimizer is the origin and the error is just ‖x‖.
+        minimizer is the origin and the error is just ||x||.
         """
         raise NotImplementedError("[DAY 1] lab 2")
