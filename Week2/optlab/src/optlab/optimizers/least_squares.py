@@ -17,7 +17,7 @@ from ..types import Vec
 class GaussNewton(IOptimizer):
     """Solve (JᵀJ)δ = −Jᵀr, then x ← x + δ.
 
-    Cheap — only first derivatives — and nearly quadratic when residuals are small. But
+    Cheap - only first derivatives - and nearly quadratic when residuals are small. But
     JᵀJ can be singular, and then it diverges. Day 5 asks you to make it diverge on
     purpose from the hard start and to document that failure rather than patch it: it is
     the motivation for the next class.
@@ -44,7 +44,7 @@ class LevenbergMarquardt(IOptimizer):
     """Solve (JᵀJ + λI)δ = −Jᵀr, adapting λ by the gain ratio.
 
     λ → 0 recovers Gauss-Newton; λ → ∞ gives a small gradient step. Since JᵀJ + λI is
-    positive definite for any λ > 0, Cholesky never fails here — a direct payoff of
+    positive definite for any λ > 0, Cholesky never fails here - a direct payoff of
     day 4, and the reason LM is the workhorse of curve fitting.
 
     λ is the dual of a trust-region radius: larger λ means a smaller trusted step. The

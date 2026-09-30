@@ -1,4 +1,4 @@
-"""PLACEHOLDER — replace this file with your Week 1 reverse-mode module.
+"""PLACEHOLDER - replace this file with your Week 1 reverse-mode module.
 
 Your Week 1 version already provides everything needed here:
 

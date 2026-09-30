@@ -1,4 +1,4 @@
-"""Part 1 — forward mode with dual numbers."""
+"""Part 1 - forward mode with dual numbers."""
 import dataclasses
 import math
 import unittest

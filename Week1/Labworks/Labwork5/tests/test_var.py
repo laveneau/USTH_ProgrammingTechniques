@@ -1,4 +1,4 @@
-"""Part 2 — reverse mode (backpropagation) on scalars."""
+"""Part 2 - reverse mode (backpropagation) on scalars."""
 import math
 import unittest
 

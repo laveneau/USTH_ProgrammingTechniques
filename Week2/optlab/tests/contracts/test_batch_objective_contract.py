@@ -1,7 +1,7 @@
 """Every `IBatchObjective` must agree with the `IObjective` it is mixed into.
 
-The contract is one identity — the batch gradient over *all* the indices is the full
-gradient — plus the unbiasedness that identity implies. It is what licenses SGD to use a
+The contract is one identity - the batch gradient over *all* the indices is the full
+gradient - plus the unbiasedness that identity implies. It is what licenses SGD to use a
 sample in place of the real thing, and it is the first thing to check when a stochastic
 run drifts somewhere the deterministic one does not.
 
@@ -98,7 +98,7 @@ def test_the_order_of_the_indices_does_not_matter(name: str) -> None:
 def test_a_repeated_batch_weights_its_samples_twice(name: str) -> None:
     """The divisor is `len(idx)`, not the number of distinct samples in it.
 
-    Sampling with replacement is legitimate — notebook 3 compares it with reshuffling —
+    Sampling with replacement is legitimate - notebook 3 compares it with reshuffling -
     so a duplicated index must count twice rather than being quietly deduplicated.
     """
     problem = BATCH_OBJECTIVES[name]()

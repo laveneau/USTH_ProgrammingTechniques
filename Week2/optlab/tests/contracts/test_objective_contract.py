@@ -1,7 +1,7 @@
 """Liskov substitution, made executable: every `IObjective` must satisfy the same test.
 
 Add your implementations to `OBJECTIVES` as you write them. If a subclass cannot pass a
-test its base class passes, it is not substitutable — and the design, not the test, is
+test its base class passes, it is not substitutable - and the design, not the test, is
 what needs changing.
 
 Each entry is a *factory*, not an instance, so that a constructor which is still a stub

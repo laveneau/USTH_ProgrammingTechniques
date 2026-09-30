@@ -1,4 +1,4 @@
-"""The three two-dimensional algebras — the Week 1 bonus, kept outside the package.
+"""The three two-dimensional algebras - the Week 1 bonus, kept outside the package.
 
 Numbers a + b·t with t² = s:
 
@@ -11,7 +11,7 @@ is accurate to O(h²) but still an approximation.
 
 This lives in `labs/` rather than `src/optlab/` on purpose: it is a beautiful aside, not
 something the optimizers depend on. Keeping it out of the package is the KISS decision
-of the week — a generic `Num2` inside `src/` would be an abstraction with exactly one
+of the week - a generic `Num2` inside `src/` would be an abstraction with exactly one
 user.
 
 Optional. Nothing in the week's grading depends on it.

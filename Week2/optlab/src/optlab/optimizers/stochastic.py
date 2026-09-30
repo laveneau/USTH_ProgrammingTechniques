@@ -1,4 +1,4 @@
-"""[DAY 3] Training on a sample of the gradient — how modern machine learning actually fits.
+"""[DAY 3] Training on a sample of the gradient - how modern machine learning actually fits.
 
 These are their own `IOptimizer`s rather than `IDirectionRule`s: the loop is different
 (epochs, shuffling, no line search), so forcing them into `DescentOptimizer` would mean
@@ -22,7 +22,7 @@ class SGD(IOptimizer):
     reproducible from a seed, and it is dependency inversion applied to randomness.
 
     With `batch_size = n` this must reduce exactly to gradient descent with a fixed
-    step — there is a test for it.
+    step - there is a test for it.
 
     A constant step converges only to a noise floor proportional to α; a decaying
     schedule satisfying the Robbins-Monro conditions converges properly. Day 3 asks you
@@ -58,7 +58,7 @@ class Adam(IOptimizer):
     Keeps m (first moment) and v (second), both bias-corrected because they start at
     zero and would otherwise be biased toward it for the first several steps.
 
-    What it really does is auto-standardize the per-coordinate scale — the optimizer-side
+    What it really does is auto-standardize the per-coordinate scale - the optimizer-side
     answer to the conditioning problem that day 1 diagnosed in the data. On the ill-scaled
     (1 vs 1000) problem it needs far fewer epochs than SGD; that contrast is the lab.
 

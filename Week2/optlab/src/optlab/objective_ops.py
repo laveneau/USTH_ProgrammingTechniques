@@ -8,7 +8,7 @@ class RegularizedObjective(IObjective, ITwiceDifferentiable):
     """f(w) + r(w), presented as a single `IObjective`.
 
     An adapter, and the open/closed moment of the week: ridge regression is not a new
-    optimizer, a new loss, or a new anything — it is `RegularizedObjective(GLMLoss, L2)`
+    optimizer, a new loss, or a new anything - it is `RegularizedObjective(GLMLoss, L2)`
     handed to an optimizer you already wrote. Every method from days 2 and 3 gains a
     regularized version the moment this class exists.
 

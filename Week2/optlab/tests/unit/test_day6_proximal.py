@@ -46,7 +46,7 @@ def _prox_objective(w: Vec, v: Vec, t: float, reg: IRegularizer) -> float:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — the penalties
+# Exercise 1 - the penalties
 # --------------------------------------------------------------------------- #
 
 
@@ -62,7 +62,7 @@ def test_elastic_net_value_mixes_the_two_norms() -> None:
 
 
 def test_elastic_net_at_the_two_extremes_is_l1_and_l2() -> None:
-    """alpha = 1 must *be* lasso and alpha = 0 must *be* ridge — value and prox both.
+    """alpha = 1 must *be* lasso and alpha = 0 must *be* ridge - value and prox both.
 
     A prox that composed the two operators in the wrong order, or that forgot to scale
     the threshold by alpha, still passes the convexity contract test and fails here.
@@ -109,13 +109,13 @@ def test_every_prox_beats_its_neighbours() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — ISTA and FISTA
+# Exercise 1 - ISTA and FISTA
 # --------------------------------------------------------------------------- #
 
 
 def test_proximal_gradient_ignores_its_objective_argument() -> None:
     """The smooth part and the penalty arrive in the constructor, so `minimize(None, x0)`
-    is the documented call — and `IOptimizer` still holds, which is the point."""
+    is the documented call - and `IOptimizer` still holds, which is the point."""
     smooth, step = _sparse_problem()
     result = ProximalGradient(smooth, L1(0.1), step=step, max_iter=50).minimize(None, np.zeros(20))
     assert result.x.shape == (20,)
@@ -150,7 +150,7 @@ def test_lasso_zeroes_exactly_while_ridge_only_shrinks() -> None:
     """The claim the whole day rests on, and the reason `==` is the right comparison.
 
     Same optimizer, same data, same step, same tolerance. The *only* thing that changes
-    is which `IRegularizer` object is passed in — which is the design point of day 4 and
+    is which `IRegularizer` object is passed in - which is the design point of day 4 and
     day 6 together.
     """
     smooth, step = _sparse_problem()
@@ -271,7 +271,7 @@ def test_the_reported_residual_is_not_a_gradient_norm() -> None:
 
 def test_lasso_matches_sklearn() -> None:
     """The oracle. sklearn's `Lasso` minimises ‖y − Xw‖²/(2n) + α‖w‖₁, which is exactly
-    `GLMLoss(X, y, SquaredError())` plus `L1(α)` — no rescaling needed."""
+    `GLMLoss(X, y, SquaredError())` plus `L1(α)` - no rescaling needed."""
     linear_model = pytest.importorskip("sklearn.linear_model")
     smooth, step = _sparse_problem()
     lam = 0.1
@@ -284,7 +284,7 @@ def test_lasso_matches_sklearn() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — Huber and Poisson
+# Exercise 2 - Huber and Poisson
 # --------------------------------------------------------------------------- #
 
 
@@ -317,7 +317,7 @@ def test_huber_is_continuously_differentiable_at_the_kink() -> None:
 
 
 def test_huber_bounds_the_influence_of_any_observation() -> None:
-    """|φ'| ≤ delta however far away the point is — that is the definition of robust."""
+    """|φ'| ≤ delta however far away the point is - that is the definition of robust."""
     loss = Huber(delta=1.5)
     z = np.array([1e3, -1e6, 0.0])
     y = np.zeros(3)
@@ -343,7 +343,7 @@ def test_huber_with_a_huge_delta_is_squared_error() -> None:
 def test_huber_survives_outliers_that_destroy_least_squares() -> None:
     """20 corrupted points out of 120, all on the right: the slope, not just the fit.
 
-    Squared error returns a slope of −0.065 where the truth is 2.0 — not degraded,
+    Squared error returns a slope of −0.065 where the truth is 2.0 - not degraded,
     reversed. Huber returns 1.70.
     """
     m = 120

@@ -1,6 +1,6 @@
 # Notebooks
 
-One per day. These are where you *look* at what you built — every algorithm gets a plot,
+One per day. These are where you *look* at what you built - every algorithm gets a plot,
 and every plot gets an explanation.
 
 | Notebook | Day | What to show |
@@ -19,7 +19,7 @@ every piece of `optlab` it is about to use. Run it first. `MISSING` means you ha
 written that lab yet, not that anything is wrong.
 
 The notebooks themselves need only `numpy` and `matplotlib`. scipy and scikit-learn are
-used as *oracles* — to check your answer against somebody else's — and they live in the
+used as *oracles* - to check your answer against somebody else's - and they live in the
 optional `dev` extra, so install them with:
 
 ```
@@ -29,11 +29,11 @@ pip install -e ".[dev]"
 That is allowed here because this directory is outside `src/`; importing any of them from
 `src/optlab/` fails `tests/test_no_oracle_in_src.py`, which is the point of the rule.
 
-As shipped, none of the six notebooks imports scipy or sklearn — every oracle in them is
+As shipped, none of the six notebooks imports scipy or sklearn - every oracle in them is
 either a closed-form answer or a second independent implementation, so `numpy` and
 `matplotlib` are enough to run all of them end to end. Reach for the `dev` extra when
 *you* want to check your own work against an outside implementation.
 
 For every algorithm: **derive it, code it, check it against an oracle, then break it.**
 The last step is not optional. A method you have only seen succeed is a method you do
-not yet understand — force the divergence, and be able to say why it happened.
+not yet understand - force the divergence, and be able to say why it happened.

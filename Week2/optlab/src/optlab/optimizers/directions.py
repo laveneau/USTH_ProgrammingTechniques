@@ -22,7 +22,7 @@ class HeavyBall(IDirectionRule):
     """[DAY 2] d = −g + beta·(previous step). Polyak momentum.
 
     Stateful: it remembers the last direction, which is why an `IDirectionRule` is an
-    object and not a function. Improves the rate to (√κ−1)/(√κ+1) — a square root, which
+    object and not a function. Improves the rate to (√κ−1)/(√κ+1) - a square root, which
     on κ = 10⁴ is the difference between 10⁴ and 10² iterations.
     """
 
@@ -38,7 +38,7 @@ class NewtonDirection(IDirectionRule):
     """[DAY 4] Solve H d = −g for the Newton direction.
 
     The objective must be `ITwiceDifferentiable`. Receives its `ILinearSolver` by
-    constructor rather than calling Cholesky directly — so the same class becomes
+    constructor rather than calling Cholesky directly - so the same class becomes
     Newton-CG the day someone writes a conjugate-gradient solver, with no edit here.
 
     Propagate `NotPositiveDefiniteError` rather than silently falling back to the
@@ -59,7 +59,7 @@ class ModifiedNewton(IDirectionRule):
     `NewtonDirection` propagates `NotPositiveDefiniteError` because an indefinite Hessian
     is a fact the caller should see. This class is the repair: catch it, add τI, and
     double τ until Cholesky succeeds. Since H + τI → τI as τ grows, and the solution of
-    τI·d = −g is −g/τ, large τ degrades gracefully to a small gradient step — you are
+    τI·d = −g is −g/τ, large τ degrades gracefully to a small gradient step - you are
     never worse off than steepest descent.
 
     Start each call from `tau0` rather than from the τ that worked last time: once you are

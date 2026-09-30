@@ -45,7 +45,7 @@ class LogisticNLL(IPointwiseLoss):
 class Huber(IPointwiseLoss):
     """[DAY 6] Quadratic near zero, linear beyond `delta`.
 
-    Bounded influence, so a gross outlier cannot dominate the fit — yet still smooth,
+    Bounded influence, so a gross outlier cannot dominate the fit - yet still smooth,
     unlike the L1 *penalty* of the same day. Note where each non-smoothness lives:
     Huber is smooth in the residual, L1 is non-smooth in the parameters.
 

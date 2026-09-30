@@ -1,4 +1,4 @@
-"""[DAY 4] Cholesky factorization — the only linear solver the course needs.
+"""[DAY 4] Cholesky factorization - the only linear solver the course needs.
 
 Never invert a matrix to solve a system. Factor once, then two triangular solves:
 n³/3 flops instead of n³, and far better numerics.

@@ -1,4 +1,4 @@
-"""Type aliases used throughout optlab. PROVIDED — do not edit."""
+"""Type aliases used throughout optlab. PROVIDED - do not edit."""
 
 from typing import TypeAlias
 

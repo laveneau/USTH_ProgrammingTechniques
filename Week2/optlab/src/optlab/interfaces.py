@@ -1,8 +1,8 @@
-"""Every abstract base class of optlab. PROVIDED — do not edit.
+"""Every abstract base class of optlab. PROVIDED - do not edit.
 
 These are the contracts of the week. You write implementations that inherit them; you
-never change an interface. An implementation may inherit several — for example
-`GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)` — which is the multiple
+never change an interface. An implementation may inherit several - for example
+`GLMLoss(IObjective, ITwiceDifferentiable, IBatchObjective)` - which is the multiple
 inheritance of Week 1, Unit 1, used for real.
 
 Structurally these are the duck-typed contracts of Week 1, Unit 2. `typing.Protocol` is
@@ -18,7 +18,7 @@ Every line of behaviour behind these contracts is one you write.
 
 Interface segregation is the point: `DescentOptimizer` asks only for an `IObjective`,
 `SGD` only for an `IBatchObjective`, `NewtonDirection` adds `ITwiceDifferentiable`, and
-`GaussNewton` depends on `ILeastSquaresProblem` — which is deliberately *not* an
+`GaussNewton` depends on `ILeastSquaresProblem` - which is deliberately *not* an
 `IObjective`. No implementation is ever forced to raise `NotImplementedError` to satisfy
 a method it does not have.
 """
@@ -83,7 +83,7 @@ class IPointwiseLoss(ABC):
     """A per-sample loss φ(z, y) and its first two derivatives with respect to z.
 
     `z` is the linear predictor Xw, `y` the observation. Vectorized: all three take and
-    return arrays of the same shape. This is the object `GLMLoss` is injected with —
+    return arrays of the same shape. This is the object `GLMLoss` is injected with -
     one loss class per likelihood, one GLM class for all of them.
     """
 
@@ -104,7 +104,7 @@ class ILeastSquaresProblem(ABC):
     """A nonlinear least-squares problem: minimize ½‖r(x)‖².
 
     Deliberately NOT an `IObjective`. Gauss-Newton and Levenberg-Marquardt need the
-    residuals and the Jacobian separately — collapsing them into value/gradient would
+    residuals and the Jacobian separately - collapsing them into value/gradient would
     throw away the structure that makes those methods work. This is interface
     segregation as a design decision, not an accident.
     """
@@ -201,7 +201,7 @@ class ILinearSolver(ABC):
     """Solves A x = b for a symmetric positive definite A.
 
     One abstraction, reused by `NewtonDirection`, `GaussNewton` and
-    `LevenbergMarquardt` — which is why a conjugate-gradient solver could be dropped in
+    `LevenbergMarquardt` - which is why a conjugate-gradient solver could be dropped in
     later without editing any of them.
     """
 

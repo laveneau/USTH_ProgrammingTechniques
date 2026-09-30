@@ -33,7 +33,7 @@ class Squares(IObjective):
 class Inconsistent(IObjective):
     """A flat value with a non-zero gradient: no step can ever decrease it.
 
-    Not a realistic objective — it exists to drive `Armijo` to exhaust its budget, which
+    Not a realistic objective - it exists to drive `Armijo` to exhaust its budget, which
     is the only way to check that `LineSearchFailed` is raised and then caught.
     """
 
@@ -50,7 +50,7 @@ def _event(iteration: int = 1, grad_norm: float = 1.0) -> StepEvent:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — stopping criteria
+# Exercise 1 - stopping criteria
 # --------------------------------------------------------------------------- #
 
 
@@ -75,7 +75,7 @@ def test_any_of_fires_when_either_does() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — observer
+# Exercise 1 - observer
 # --------------------------------------------------------------------------- #
 
 
@@ -90,7 +90,7 @@ def test_history_records_what_it_is_given() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — direction rules
+# Exercise 1 - direction rules
 # --------------------------------------------------------------------------- #
 
 
@@ -114,7 +114,7 @@ def test_heavy_ball_remembers_the_previous_direction() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 / 2 — line searches
+# Exercise 1 / 2 - line searches
 # --------------------------------------------------------------------------- #
 
 
@@ -156,7 +156,7 @@ def test_armijo_rejects_a_direction_that_does_not_descend() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 / 2 — the loop itself
+# Exercise 1 / 2 - the loop itself
 # --------------------------------------------------------------------------- #
 
 

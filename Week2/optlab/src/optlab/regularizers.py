@@ -28,7 +28,7 @@ class L2(IRegularizer):
     """[DAY 4] r(w) = ½λ‖w‖². Ridge. Smooth, so ordinary descent and Newton handle it.
 
     Its prox is the shrinkage w / (1 + λt). Adding λI to the Hessian also makes it
-    unconditionally positive definite, so Cholesky can no longer fail — the same trick
+    unconditionally positive definite, so Cholesky can no longer fail - the same trick
     LM uses on day 5.
     """
 
@@ -48,7 +48,7 @@ class L2(IRegularizer):
 class L1(IRegularizer):
     """[DAY 6] r(w) = λ‖w‖₁. Lasso. NOT differentiable at zero.
 
-    `gradient` must raise `NotImplementedError` — that is not a gap, it is the contract.
+    `gradient` must raise `NotImplementedError` - that is not a gap, it is the contract.
     The kink at zero is precisely what pins coefficients to exactly zero, and the way
     past it is `prox`, the soft-threshold sign(v)·max(|v| − λt, 0).
     """

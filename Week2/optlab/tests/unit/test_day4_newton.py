@@ -54,7 +54,7 @@ class DoubleWell(IObjective, ITwiceDifferentiable):
 
 
 class OnlyFirstOrder(IObjective):
-    """An objective with no Hessian at all — `ITwiceDifferentiable` is a separate mixin."""
+    """An objective with no Hessian at all - `ITwiceDifferentiable` is a separate mixin."""
 
     def value(self, x: Vec) -> float:
         return float(x @ x)
@@ -75,7 +75,7 @@ def _stop(tol: float = 1e-10, max_iter: int = 60) -> AnyOf:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — check_hessian and the three hessians
+# Exercise 2 - check_hessian and the three hessians
 # --------------------------------------------------------------------------- #
 
 
@@ -95,7 +95,7 @@ def test_check_hessian_rejects_a_wrong_hessian() -> None:
 
 
 def test_quadratic_hessian_is_the_matrix_itself() -> None:
-    """Constant — which is exactly why Newton finishes a quadratic in one step."""
+    """Constant - which is exactly why Newton finishes a quadratic in one step."""
     A = np.array([[4.0, 1.0], [1.0, 3.0]])
     problem = Quadratic(A, np.array([1.0, -2.0]))
     np.testing.assert_allclose(problem.hessian(np.zeros(2)), A)
@@ -140,12 +140,12 @@ def test_every_hessian_is_symmetric() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — NewtonDirection and newton()
+# Exercise 2 - NewtonDirection and newton()
 # --------------------------------------------------------------------------- #
 
 
 def test_newton_solves_a_quadratic_in_one_iteration() -> None:
-    """The model is not a model here, it is the function — so one step is exact."""
+    """The model is not a model here, it is the function - so one step is exact."""
     A = np.array([[4.0, 1.0], [1.0, 3.0]])
     b = np.array([1.0, -2.0])
     result = newton().minimize(Quadratic(A, b), np.array([5.0, -7.0]))
@@ -164,7 +164,7 @@ def test_newton_on_linear_regression_is_the_normal_equations() -> None:
 
 
 def test_newton_and_gradient_descent_find_the_same_logistic_minimizer() -> None:
-    """Different routes, one minimum — and note the iteration counts while you are here.
+    """Different routes, one minimum - and note the iteration counts while you are here.
 
     Newton: 3 iterations. Steepest descent with the same line search and a *looser* target:
     128. That ratio is the whole argument for paying for a Hessian.
@@ -185,7 +185,7 @@ def test_newton_and_gradient_descent_find_the_same_logistic_minimizer() -> None:
 
 
 def test_the_newton_error_squares_at_every_step() -> None:
-    """e_{k+1}/e_k² stays bounded — the definition of quadratic convergence."""
+    """e_{k+1}/e_k² stays bounded - the definition of quadratic convergence."""
     X, _, y = _design(n=200, d=5, seed=4)
     loss = GLMLoss(X, y, LogisticNLL())
     history = History()
@@ -223,7 +223,7 @@ def test_newton_direction_needs_a_hessian() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 3 — the indefinite Hessian, and what does and does not repair it
+# Exercise 3 - the indefinite Hessian, and what does and does not repair it
 # --------------------------------------------------------------------------- #
 
 
@@ -335,7 +335,7 @@ def test_modified_newton_gives_up_rather_than_lying() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 4 — ridge, for free
+# Exercise 4 - ridge, for free
 # --------------------------------------------------------------------------- #
 
 
@@ -376,7 +376,7 @@ def test_the_regularized_gradient_is_the_gradient_of_the_regularized_value() -> 
 
 
 def test_ridge_lifts_every_eigenvalue_by_lambda() -> None:
-    """Which is why ridge can never break Cholesky — and it is the last piece of day 5."""
+    """Which is why ridge can never break Cholesky - and it is the last piece of day 5."""
     X, y, _ = _design()
     lam = 0.7
     inner = GLMLoss(X, y, SquaredError())

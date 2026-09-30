@@ -51,7 +51,7 @@ class Sinusoid(ILeastSquaresProblem):
     """y = a·sin(omega·t + phi), with parameters x = (a, omega, phi).
 
     The counterexample: start with omega far from the truth and LM converges neatly to a
-    *local* minimum. "Converged" does not mean "best" — neither GN nor LM is a global
+    *local* minimum. "Converged" does not mean "best" - neither GN nor LM is a global
     method, and nothing in this course is.
     """
 

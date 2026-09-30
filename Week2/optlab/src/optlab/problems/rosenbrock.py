@@ -11,7 +11,7 @@ class Rosenbrock(IObjective, ITwiceDifferentiable):
 
     A curved valley: the floor is cheap to reach and then almost flat along a bend, so
     steepest descent crawls. Not convex, so the Hessian is indefinite away from the
-    valley — which is what makes it a good stress test for damped Newton on day 4.
+    valley - which is what makes it a good stress test for damped Newton on day 4.
     """
 
     def value(self, x: Vec) -> float:

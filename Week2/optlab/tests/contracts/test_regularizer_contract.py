@@ -67,6 +67,6 @@ def test_non_smooth_prox_with_t_zero_is_the_identity(name: str, reg: IRegularize
 @pytest.mark.contract
 @pytest.mark.day6
 def test_l1_gradient_refuses_rather_than_lying() -> None:
-    """Not a gap in the implementation — the contract. L1 has no gradient at zero."""
+    """Not a gap in the implementation - the contract. L1 has no gradient at zero."""
     with pytest.raises(NotImplementedError):
         L1(lam=1.0).gradient(np.zeros(3))

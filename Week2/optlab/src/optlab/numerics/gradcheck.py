@@ -26,7 +26,7 @@ def numerical_jacobian(f: Callable[[Vec], Vec], x: Vec, h: float = 1e-6) -> Mat:
     """Central-difference approximation of the Jacobian of a vector-valued `f`.
 
     Shape (m, n) for f: ℝⁿ → ℝᵐ. Reused on day 4 to check a Hessian (the Jacobian of the
-    gradient) and on day 5 to check the Jacobian of a residual vector — write it once.
+    gradient) and on day 5 to check the Jacobian of a residual vector - write it once.
     """
     raise NotImplementedError("[DAY 1] lab 1")
 

@@ -1,4 +1,4 @@
-# Programming Techniques — Week 1 of a 50 h course
+# Programming Techniques - Week 1 of a 50 h course
 
 **MSc Data Science · 25 h · 6 days × ≈ 4 h 15 · foundations for Week 2 (Optimization)**
 
@@ -8,7 +8,7 @@
 
 ## 0. Where this week sits
 
-This is **Week 1: clean, modern Python** — how to write code that is correct, typed, tested, and well-architected. It is the prerequisite for **Week 2: Optimization**, where students extend a small library (`optlab`) under exactly these disciplines.
+This is **Week 1: clean, modern Python** - how to write code that is correct, typed, tested, and well-architected. It is the prerequisite for **Week 2: Optimization**, where students extend a small library (`optlab`) under exactly these disciplines.
 
 The week is **four lecture + labwork units** followed by a **project**, across six sessions:
 
@@ -20,7 +20,7 @@ The week is **four lecture + labwork units** followed by a **project**, across s
 | 4 | **Architecture** | L4 | Labwork 4 | SOLID, TDD, DRY, KISS |
 | P | **Project: Automatic differentiation** | project | project | operator overloading, `@dataclass`, the bridge to Week 2 |
 
-> **Pacing — five items over six sessions.** There is deliberately no fixed activity for the spare session, because in practice it is already spoken for: a unit routinely runs a little past its session (Typing and Architecture most often), and the autodiff project comfortably fills more than one. Expect the four units to take **four to five sessions** and the project the remaining **one to two**. Let that boundary float with the real pace rather than cutting a labwork short to stay on a schedule — the per-unit timings below describe the rhythm of one session, not a timetable. The project **replaces the former end-of-week project** and is the hinge into Week 2.
+> **Pacing - five items over six sessions.** There is deliberately no fixed activity for the spare session, because in practice it is already spoken for: a unit routinely runs a little past its session (Typing and Architecture most often), and the autodiff project comfortably fills more than one. Expect the four units to take **four to five sessions** and the project the remaining **one to two**. Let that boundary float with the real pace rather than cutting a labwork short to stay on a schedule - the per-unit timings below describe the rhythm of one session, not a timetable. The project **replaces the former end-of-week project** and is the hinge into Week 2.
 
 ### Goals of the week
 By the end of the week a student can: design a small class hierarchy; annotate it and pass `mypy --strict`; write `unittest` tests including mocks, and read and write the `pytest` equivalents; refactor code to satisfy each SOLID principle; and apply all of this in a non-trivial project (a working automatic-differentiation engine).
@@ -33,18 +33,18 @@ Lecture 60–90 min · break 10 · guided lab (write / refactor / test code) ≈
 
 Unit 2 is the exception: its lecture is delivered in **two halves of 40 min** with lab time between them (see below). No unit puts more than 90 minutes of lecture in front of a keyboard.
 
-### Materials review — corrections applied
+### Materials review - corrections applied
 Checking the syllabus against the actual notebooks surfaced fixable issues; corrected files accompany this plan.
 
-- **Labworks (cleaned starters)** — uniform `%%writefile` + `!python` (+ `!mypy --strict` from L2), consistent `labworkN/` layout, incidental bugs fixed, *pedagogical* flaws kept (the `Dog` shared-list bug; LW3's planted errors; LW4's "before" code). LW2's `power` drops the needless numpy.
-- **Corrections (fixed)** — real defects repaired: LW1 the mutable default `tricks=[]` and `miles_to_km` returning a **tuple** (`1,852` → `1.852`); LW2 numpy removed and a redundant `Union` type simplified; LW4 an unused import, an untyped/non-abstract `ICoffeeShop.name`, a parameter named `str` shadowing the builtin, and an `Optional` dereferenced without a guard (the last two broke `mypy --strict`).
-- **LW3** ships a dedicated **correction** whose tests reveal the planted errors, sorted into *behavioural* (caught by tests), *specification* (docstring vs code), and *static* (caught by `mypy --strict`) — a good lesson that tests and the type checker are complementary.
-- **Closed**: the YAGNI gap is fixed — Lecture 4 now carries a `## YAGNI` section, so it agrees with Labwork 4's `# YAGNI` payoff line.
-- **Lecture 2 split** — the one lecture that was out of proportion (~6 800 words, 3 code cells, ~45 min of solid reading) is now **`Lecture2a.ipynb`** and **`Lecture2b.ipynb`**, taught either side of the first half of Labwork 2. All 28 original content cells were carried over unchanged; what was added is each half's own framing plus 9 runnable cells, two of which invoke `mypy --strict` so students see it object to a program that runs. The original `Lecture2.ipynb` has been deleted now that the split is reviewed; its history remains in git.
+- **Labworks (cleaned starters)** - uniform `%%writefile` + `!python` (+ `!mypy --strict` from L2), consistent `labworkN/` layout, incidental bugs fixed, *pedagogical* flaws kept (the `Dog` shared-list bug; LW3's planted errors; LW4's "before" code). LW2's `power` drops the needless numpy.
+- **Corrections (fixed)** - real defects repaired: LW1 the mutable default `tricks=[]` and `miles_to_km` returning a **tuple** (`1,852` → `1.852`); LW2 numpy removed and a redundant `Union` type simplified; LW4 an unused import, an untyped/non-abstract `ICoffeeShop.name`, a parameter named `str` shadowing the builtin, and an `Optional` dereferenced without a guard (the last two broke `mypy --strict`).
+- **LW3** ships a dedicated **correction** whose tests reveal the planted errors, sorted into *behavioural* (caught by tests), *specification* (docstring vs code), and *static* (caught by `mypy --strict`) - a good lesson that tests and the type checker are complementary.
+- **Closed**: the YAGNI gap is fixed - Lecture 4 now carries a `## YAGNI` section, so it agrees with Labwork 4's `# YAGNI` payoff line.
+- **Lecture 2 split** - the one lecture that was out of proportion (~6 800 words, 3 code cells, ~45 min of solid reading) is now **`Lecture2a.ipynb`** and **`Lecture2b.ipynb`**, taught either side of the first half of Labwork 2. All 28 original content cells were carried over unchanged; what was added is each half's own framing plus 9 runnable cells, two of which invoke `mypy --strict` so students see it object to a program that runs. The original `Lecture2.ipynb` has been deleted now that the split is reviewed; its history remains in git.
 
 ---
 
-## Unit 1 — Classes in Python
+## Unit 1 - Classes in Python
 
 **Goal.** Model a domain with classes: state, behavior, inheritance, and Python's object model.
 
@@ -62,10 +62,10 @@ Checking the syllabus against the actual notebooks surfaced fixable issues; corr
 Class vs object; `self`; the constructor `__init__` (default and parameterized); **class variables vs instance variables** (the classic mutable-default trap); destructors. **Inheritance**: parent/child, `object`, calling `super().__init__()`, multilevel and multiple inheritance. **Encapsulation**: protected `_x` and "private" `__x` (name mangling). **Polymorphism**: built-in and user-defined polymorphic functions, polymorphism with methods and with inheritance. **Static and class methods** (`@staticmethod`, `@classmethod`).
 
 #### Labwork 1 (exercises)
-1. **Spot the bug**: `Dog.tricks = []` as a *class* variable is shared across instances — fix it by moving the list into `__init__` (instance state). The canonical class-vs-instance lesson.
+1. **Spot the bug**: `Dog.tricks = []` as a *class* variable is shared across instances - fix it by moving the list into `__init__` (instance state). The canonical class-vs-instance lesson.
 2. **`Vegetable`**: a minimal class with a `name`, instantiated and printed.
 3. **`Vehicle`**: capacity, engine-powered or not, top speed; then `Bicycle`, `Car`, `Boat`, `Plane`.
-4. **Multiple inheritance**: a `Vehicle` class and an `Engine` class (fuel type as an `Enum`, average consumption) combined by multiple inheritance — `Car`/`Boat`/`Airplane` are `class X(Vehicle, Engine)`; `Donkey`/`Bicycle` have no engine.
+4. **Multiple inheritance**: a `Vehicle` class and an `Engine` class (fuel type as an `Enum`, average consumption) combined by multiple inheritance - `Car`/`Boat`/`Airplane` are `class X(Vehicle, Engine)`; `Donkey`/`Bicycle` have no engine.
 5. **`DoubleLinkedList`**: empty constructor, `__iter__`, prepend, remove-first; a test program that builds, prints forward and reverse, removes, and checks.
 
 #### Notes / pitfalls
@@ -73,7 +73,7 @@ Mutable class attributes; forgetting `super().__init__()`; the difference betwee
 
 ---
 
-## Unit 2 — Typing
+## Unit 2 - Typing
 
 **Goal.** Add static type information to dynamic Python, understand what the type checker can and cannot prove, and make `mypy` part of the workflow.
 
@@ -81,31 +81,31 @@ Mutable class attributes; forgetting `super().__init__()`; the difference betwee
 
 | Time | Len | Activity |
 |---|---|---|
-| 0:00 | 40 | **Lecture 2a** — annotating the code you write |
+| 0:00 | 40 | **Lecture 2a** - annotating the code you write |
 | 0:40 | 45 | Labwork 2, exercises **1–2** |
 | 1:25 | 10 | Break |
-| 1:35 | 40 | **Lecture 2b** — generics, classes, the `typing` module |
+| 1:35 | 40 | **Lecture 2b** - generics, classes, the `typing` module |
 | 2:15 | 80 | Labwork 2, exercises **3–4** |
 | 3:35 | 20 | Debrief + `mypy --strict` from here on |
 
 #### Lecture, in two halves (L2a, L2b)
 
-Lecture 2 was one notebook of ~6 800 words against 3 code cells — by a wide margin the longest uninterrupted read of the week (L1: 3 300 words, but 29 code cells; L3: 3 700; L4: 4 400). It is now split at its natural seam — *how do I annotate?* / *how does the checker reason?* — which is also where Labwork 2 changes gear. No original material was dropped; both halves gained runnable cells.
+Lecture 2 was one notebook of ~6 800 words against 3 code cells - by a wide margin the longest uninterrupted read of the week (L1: 3 300 words, but 29 code cells; L3: 3 700; L4: 4 400). It is now split at its natural seam - *how do I annotate?* / *how does the checker reason?* - which is also where Labwork 2 changes gear. No original material was dropped; both halves gained runnable cells.
 
-**L2a — annotating the code you write** (≈ 20 min read, 7 code cells). **Type systems**: dynamic vs static vs **duck typing**, and why hints have no runtime effect. Type hints for variables, parameters, returns; **sequences and mappings**; type aliases; functions without return (`None`, `NoReturn`). `Any`, and why it is close to no annotation at all. Students **run `mypy` themselves** on a file the notebook writes: the program runs fine and the checker still objects, which is the case for static checking in one screen. A boxed note maps the `List`/`Dict`/`Optional` spellings used throughout onto the modern `list`/`dict`/`X | None` form, since this course requires Python ≥ 3.11.
+**L2a - annotating the code you write** (≈ 20 min read, 7 code cells). **Type systems**: dynamic vs static vs **duck typing**, and why hints have no runtime effect. Type hints for variables, parameters, returns; **sequences and mappings**; type aliases; functions without return (`None`, `NoReturn`). `Any`, and why it is close to no annotation at all. Students **run `mypy` themselves** on a file the notebook writes: the program runs fine and the checker still objects, which is the case for static checking in one screen. A boxed note maps the `List`/`Dict`/`Optional` spellings used throughout onto the modern `list`/`dict`/`X | None` form, since this course requires Python ≥ 3.11.
 
-**L2b — generics, classes, and the `typing` module** (≈ 25 min read + a reference section to skim, 5 code cells). **Type theory**: subtypes; covariant / contravariant / invariant; gradual typing and consistent types. **`TypeVar`** in its three flavours (plain, constrained, `bound=`); `Optional`; type hints for methods; classes as types and forward references; returning `self`/`cls`; annotating `*args`/`**kwargs`; **`Callable`**. A tour of the `typing` module — marked explicitly as a catalogue to skim, not a read. Closing: PEP 8 style.
+**L2b - generics, classes, and the `typing` module** (≈ 25 min read + a reference section to skim, 5 code cells). **Type theory**: subtypes; covariant / contravariant / invariant; gradual typing and consistent types. **`TypeVar`** in its three flavours (plain, constrained, `bound=`); `Optional`; type hints for methods; classes as types and forward references; returning `self`/`cls`; annotating `*args`/`**kwargs`; **`Callable`**. A tour of the `typing` module - marked explicitly as a catalogue to skim, not a read. Closing: PEP 8 style.
 
-> The variance section is backed by a second `mypy` run students execute. `Sequence[float]` accepts a `list[int]`, a `list[bool]` and a `tuple[float, ...]`; `list[float]` rejects all three — **but accepts a bare literal `[1, 2]`**, because `mypy` infers a literal's element type from the parameter it is passed to. Hence the lesson, and it generalises well beyond typing: *"my test call passed" is not "my annotation is right"*.
+> The variance section is backed by a second `mypy` run students execute. `Sequence[float]` accepts a `list[int]`, a `list[bool]` and a `tuple[float, ...]`; `list[float]` rejects all three - **but accepts a bare literal `[1, 2]`**, because `mypy` infers a literal's element type from the parameter it is passed to. Hence the lesson, and it generalises well beyond typing: *"my test call passed" is not "my annotation is right"*.
 
 > Bridge note for Week 2: duck typing here is the informal version of the **ABC interfaces** used in Week 2; `Protocol` is its structural-typing form (mentioned, not required).
 
 #### Labwork 2 (exercises)
-Exercises 1–2 need only **L2a**; exercises 3–4 need **L2b** — exercise 3 is unreachable without `TypeVar`.
+Exercises 1–2 need only **L2a**; exercises 3–4 need **L2b** - exercise 3 is unreachable without `TypeVar`.
 
-1. Add parameter and return typing to a small `power` function. *(In the original it used `numpy.floor` — numpy's only incidental appearance in Week 1; the cleaned version uses `//` instead. numpy proper is ramped up in Week 2.)*
+1. Add parameter and return typing to a small `power` function. *(In the original it used `numpy.floor` - numpy's only incidental appearance in Week 1; the cleaned version uses `//` instead. numpy proper is ramped up in Week 2.)*
 2. Re-annotate the Unit-1 `Vegetable` class.
-3. Play with a linked-list implementation (from realpython) and type it correctly — this is where `TypeVar`/`Generic`/`Optional` earn their keep.
+3. Play with a linked-list implementation (from realpython) and type it correctly - this is where `TypeVar`/`Generic`/`Optional` earn their keep.
 4. Re-annotate the Unit-1 multiple-inheritance exercise (the vehicles).
 
 #### Notes / pitfalls
@@ -113,7 +113,7 @@ Exercises 1–2 need only **L2a**; exercises 3–4 need **L2b** — exercise 3 i
 
 ---
 
-## Unit 3 — Tests
+## Unit 3 - Tests
 
 **Goal.** Make correctness checkable and repeatable: write unit tests, structure them, and isolate behavior with mocks.
 
@@ -140,7 +140,7 @@ One behavior per test; arrange–act–assert; testing exceptions (`assertRaises
 
 ---
 
-## Unit 4 — Software architecture: SOLID, TDD, DRY, KISS, YAGNI
+## Unit 4 - Software architecture: SOLID, TDD, DRY, KISS, YAGNI
 
 **Goal.** Turn "code that works" into "code that stays healthy": each SOLID principle, plus the practices that keep a codebase changeable.
 
@@ -154,11 +154,11 @@ One behavior per test; arrange–act–assert; testing exceptions (`assertRaises
 | 3:15 | 20 | Debrief |
 
 #### Lecture (L4)
-**S** — Single Responsibility (before/after). **O** — Open/Closed. **L** — Liskov Substitution. **I** — Interface Segregation. **D** — Dependency Inversion. Then **TDD** (red → green → refactor), **DRY**, **KISS**, and **YAGNI** (don't add an abstraction until a concrete need exists — it pairs with KISS and OCP). Interfaces are expressed with `ABC` + `@abstractmethod`, and the lecture states the course's two interface conventions once, where `ABC` is introduced: an interface is named with a leading capital `I` (`IShape`, `INotification`, and all of Week 2's `optlab`), and an interface is **pure** -- every method abstract, no implementation, no state. A class carrying implementation is an abstract base class, keeps its plain name, and is not an interface.
+**S** - Single Responsibility (before/after). **O** - Open/Closed. **L** - Liskov Substitution. **I** - Interface Segregation. **D** - Dependency Inversion. Then **TDD** (red → green → refactor), **DRY**, **KISS**, and **YAGNI** (don't add an abstraction until a concrete need exists - it pairs with KISS and OCP). Interfaces are expressed with `ABC` + `@abstractmethod`, and the lecture states the course's two interface conventions once, where `ABC` is introduced: an interface is named with a leading capital `I` (`IShape`, `INotification`, and all of Week 2's `optlab`), and an interface is **pure** -- every method abstract, no implementation, no state. A class carrying implementation is an abstract base class, keeps its plain name, and is not an interface.
 
 > Materials note: Lecture 4 covers all of SOLID/TDD/DRY/KISS **and** YAGNI, so it matches Labwork 4 (exercise 4), which ends on a `# YAGNI` payoff line.
 
-#### Labwork 4 (exercises) — a coffee-shop running example
+#### Labwork 4 (exercises) - a coffee-shop running example
 1. **SRP**: split a class that mixes data and address-changing responsibilities.
 2. **OCP**: replace an `isinstance`-ladder invoice service with polymorphism, so a new company type needs no edit to existing code.
 3. **LSP**: fix a subclass (`B.takeaway` raising instead of honoring the contract) so any `CoffeeShop` is substitutable.
@@ -170,11 +170,11 @@ SRP is about *reasons to change*, not line count; OCP means **add**, don't edit;
 
 ---
 
-## Project — Automatic differentiation (the bridge to Week 2)
+## Project - Automatic differentiation (the bridge to Week 2)
 
-**Headline.** Build a small engine that computes **exact** derivatives of Python code, in both modes; reverse mode *is* backpropagation. This project **integrates the whole week** — classes, operator overloading, typing, tests, SOLID — and produces the tool Week 2 runs on.
+**Headline.** Build a small engine that computes **exact** derivatives of Python code, in both modes; reverse mode *is* backpropagation. This project **integrates the whole week** - classes, operator overloading, typing, tests, SOLID - and produces the tool Week 2 runs on.
 
-**New Python here (at the point of use).** **Arithmetic operator overloading** — `__add__`, `__radd__`, `__sub__`, `__neg__`, `__mul__`, `__rmul__`, `__truediv__`, `__pow__` (returning `NotImplemented` for unhandled types) — and **`@dataclass`** / `@dataclass(frozen=True)`. Everything else (classes, typing, `unittest`) is this week's material.
+**New Python here (at the point of use).** **Arithmetic operator overloading** - `__add__`, `__radd__`, `__sub__`, `__neg__`, `__mul__`, `__rmul__`, `__truediv__`, `__pow__` (returning `NotImplemented` for unhandled types) - and **`@dataclass`** / `@dataclass(frozen=True)`. Everything else (classes, typing, `unittest`) is this week's material.
 
 **Deliverable.** `autodiff/dual.py` (forward), `autodiff/tensor.py` (reverse), `autodiff_gradient(f)`, all validated by a finite-difference gradient check. This module is carried into the Week-2 repository and reused there as a gradient oracle.
 
@@ -195,7 +195,7 @@ SRP is about *reasons to change*, not line count; OCP means **add**, don't edit;
 | 2 | 3:05 | 30 | Consolidation: `make check` green, code review of the engine |
 | 2 | 3:35 | 20 | Debrief + teaser of Week 2 |
 
-> **If only one session is left**, compress to: lecture 45 · Part 1 45 · Part 2 95 (ship `_unbroadcast` and the topological sort pre-written) · Part 3 20 · debrief 20, and drop the three-algebras bonus. Part 2 is the part that must not be cut — reverse mode is what Week 2 uses.
+> **If only one session is left**, compress to: lecture 45 · Part 1 45 · Part 2 95 (ship `_unbroadcast` and the topological sort pre-written) · Part 3 20 · debrief 20, and drop the three-algebras bonus. Part 2 is the part that must not be cut - reverse mode is what Week 2 uses.
 
 #### Project scaffold
 The layout used here and throughout Week 2, set up at the start of the project:
@@ -206,21 +206,21 @@ project/
 ├── src/<package>/          # code
 └── tests/                  # unit tests
 ```
-This is the first time the four disciplines arrive as one habit rather than four topics: the engine is typed, `mypy --strict` clean, `unittest`-green (`make test`), and SOLID — and it is graded as such.
+This is the first time the four disciplines arrive as one habit rather than four topics: the engine is typed, `mypy --strict` clean, `unittest`-green (`make test`), and SOLID - and it is graded as such.
 
 #### Math/design primer (30 min)
-Just enough to start building: the derivative as a local linear map; the **chain rule** as composition of these maps; why numerical (finite-difference) gradients are only approximate; and the design question — "how do we make a program compute its own derivative?" — which the project answers.
+Just enough to start building: the derivative as a local linear map; the **chain rule** as composition of these maps; why numerical (finite-difference) gradients are only approximate; and the design question - "how do we make a program compute its own derivative?" - which the project answers.
 
 #### Lecture
 - Four ways to a derivative: by hand (error-prone), **finite differences** (`n+1` evaluations, approximate), **symbolic** (expression blow-up), **autodiff** (exact to machine precision, bounded cost).
 - **Forward mode** with dual numbers `a + bε`, `ε² = 0`: `f(a + bε) = f(a) + f'(a)·b·ε`. Product / quotient / `exp` / `log` rules; one sweep = one directional derivative; a full gradient costs `n` sweeps.
-- **Reverse mode = backprop**: a computation graph, adjoints `v̄ = ∂L/∂v`, propagation `grad_parent += grad_out × local_jacobian`, **accumulation** at shared nodes, reverse topological order. A scalar gradient costs `O(1)` sweeps regardless of `n` — the reason neural networks are trainable.
+- **Reverse mode = backprop**: a computation graph, adjoints `v̄ = ∂L/∂v`, propagation `grad_parent += grad_out × local_jacobian`, **accumulation** at shared nodes, reverse topological order. A scalar gradient costs `O(1)` sweeps regardless of `n` - the reason neural networks are trainable.
 - Array rules (for the `Tensor` engine): `C = A @ B ⇒ Ā = C̄Bᵀ, B̄ = AᵀC̄`; `sum` broadcasts the gradient back; **broadcasting**: forward duplicates, backward sums over the duplicated axes.
 
 #### Bonus interlude (10 min): three 2-D algebras
-Numbers `a + b·t` with `t² = s ∈ {−1, 0, +1}`: complex, **dual**, hyperbolic. Only `t² = 0` gives an *exact* first derivative (dual); `t² = −1` gives the `O(h²)` **complex step**. The defining form `Q(a+bt) = a² + s·b²` has signature `(1,1,0)` / **`(1,0,1)`** / `(2,0,0)` — to get `i² = −1` you need a minus; `ε² = 0` a zero. A nice tie between operator overloading and a little algebra; coded in `labs/algebra2.py`, outside the package.
+Numbers `a + b·t` with `t² = s ∈ {−1, 0, +1}`: complex, **dual**, hyperbolic. Only `t² = 0` gives an *exact* first derivative (dual); `t² = −1` gives the `O(h²)` **complex step**. The defining form `Q(a+bt) = a² + s·b²` has signature `(1,1,0)` / **`(1,0,1)`** / `(2,0,0)` - to get `i² = −1` you need a minus; `ε² = 0` a zero. A nice tie between operator overloading and a little algebra; coded in `labs/algebra2.py`, outside the package.
 
-#### Part 1 — Dual numbers, forward mode (45 min)
+#### Part 1 - Dual numbers, forward mode (45 min)
 ```python
 @dataclass(frozen=True)
 class Dual:
@@ -234,7 +234,7 @@ def gradient_forward(f: Callable[[Vec], Dual], x: Vec) -> Vec: ...   # n sweeps
 ```
 This is the first real use of **operator overloading** and of **`@dataclass`**. Tests: known derivatives; comparison against a finite-difference gradient; differentiating **through a loop** (Babylonian `√2`: `val ≈ 1.414`, `der ≈ 0.354`). Observe: `n` sweeps for a full gradient → motivates reverse mode.
 
-#### Part 2 — `Tensor`, reverse mode (95 min)
+#### Part 2 - `Tensor`, reverse mode (95 min)
 ```python
 class Tensor:
     data: Vec
@@ -250,14 +250,14 @@ Steps: scalar ops + `backward` on a small graph; the **shared node** `x*x + x` (
 
 > SOLID in the project: each node owns its own `_backward` closure, so adding an operation is a new method, not an edit to the engine (OCP). `Dual` and `Tensor` are separate modules (SRP). The scope is kept deliberately small (KISS): no `requires_grad`, no operator registry.
 
-#### Part 3 — Gradients of real expressions (20 min)
+#### Part 3 - Gradients of real expressions (20 min)
 ```python
 def autodiff_gradient(f: Callable[[Tensor], Tensor]) -> Callable[[Vec], Vec]: ...
 ```
 Gradients of `½‖Xw − y‖²` (vs the hand formula `Xᵀ(Xw − y)`) and of the logistic negative log-likelihood. The cost ratio `time(grad)/time(value)` is provided (constant for reverse, growing for forward).
 
 #### Teaser of Week 2 (debrief)
-"Next week we stop *computing* gradients and start *following* them downhill to fit real models — linear and logistic regression, then modern stochastic training. You have just built the tool that will check every gradient we write."
+"Next week we stop *computing* gradients and start *following* them downhill to fit real models - linear and logistic regression, then modern stochastic training. You have just built the tool that will check every gradient we write."
 
 ---
 
@@ -266,7 +266,7 @@ Gradients of `½‖Xw − y‖²` (vs the hand formula `Xᵀ(Xw − y)`) and of 
 | Item | Weight | Content |
 |---|---|---|
 | Labworks 1–4 | 40 % | correctness, typing (`mypy --strict`), tests, SOLID refactorings |
-| Autodiff project | 50 % | forward + reverse modes, gradient checks green, clean design — one artifact carrying all four disciplines |
+| Autodiff project | 50 % | forward + reverse modes, gradient checks green, clean design - one artifact carrying all four disciplines |
 | Code quality throughout | 10 % | `mypy`, style, no dead code, readable tests |
 
 ---
@@ -286,5 +286,5 @@ The autodiff module, the project scaffold, and the five SOLID muscles carry dire
 - R. C. Martin, *Clean Code* and *Agile Software Development: Principles, Patterns, and Practices* (SOLID).
 - Python docs: `typing`, `unittest`, `unittest.mock`, `dataclasses`, `abc`, `enum`; `pytest` documentation (fixtures, parametrize, markers).
 - A. Griewank, A. Walther, *Evaluating Derivatives*, SIAM, 2008 (forward/reverse autodiff).
-- W. Squire, G. Trapp, "Using Complex Variables to Estimate Derivatives of Real Functions", *SIAM Review* 40(1), 1998 (complex step — bonus).
+- W. Squire, G. Trapp, "Using Complex Variables to Estimate Derivatives of Real Functions", *SIAM Review* 40(1), 1998 (complex step - bonus).
 - A. Karpathy, *micrograd*, 2020 (reverse-mode engine inspiration).

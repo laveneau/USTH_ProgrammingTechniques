@@ -84,7 +84,7 @@ class Recorder(IObjective, IBatchObjective):
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 1 — the mini-batch gradient
+# Exercise 1 - the mini-batch gradient
 # --------------------------------------------------------------------------- #
 
 
@@ -137,7 +137,7 @@ def test_batch_gradient_is_unbiased() -> None:
     """Averaging the singleton gradients reproduces the full gradient exactly.
 
     This is the whole justification for sampling: the estimate is not systematically
-    wrong in any direction. Uniform sampling is where the argument is used — the mean
+    wrong in any direction. Uniform sampling is where the argument is used - the mean
     below weights every sample equally.
     """
     X, _, y = _dataset()
@@ -167,7 +167,7 @@ def test_gradient_is_implemented_through_batch_gradient() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 2 — SGD
+# Exercise 2 - SGD
 # --------------------------------------------------------------------------- #
 
 
@@ -227,7 +227,7 @@ def test_run_ignores_the_global_numpy_seed() -> None:
 
 
 def test_one_epoch_uses_every_sample_exactly_once() -> None:
-    """Reshuffling, not sampling with replacement — and no dropped remainder.
+    """Reshuffling, not sampling with replacement - and no dropped remainder.
 
     n = 10 with b = 4 gives blocks of 4, 4 and 2. The short block is kept: dropping it
     would quietly ignore two samples out of ten on every epoch.
@@ -277,7 +277,7 @@ def test_the_recorded_value_is_the_full_loss_not_a_batch_loss() -> None:
 
 
 def test_the_step_size_follows_the_decay_schedule() -> None:
-    """α_k = α₀/(1 + γk), indexed by epoch — the schedule of Lecture 3."""
+    """α_k = α₀/(1 + γk), indexed by epoch - the schedule of Lecture 3."""
     X, y, _ = _dataset()
     history = History()
     SGD(batch_size=10, lr=0.4, n_epochs=5, lr_decay=0.25, rng=np.random.default_rng(0),
@@ -326,7 +326,7 @@ def test_momentum_defaults_to_none_and_changes_the_run_when_set() -> None:
 
 
 def test_sgd_reports_the_budget_it_spent() -> None:
-    """Spending an epoch budget is not convergence — `MaxIterations` is not either."""
+    """Spending an epoch budget is not convergence - `MaxIterations` is not either."""
     X, y, _ = _dataset()
     result = SGD(batch_size=8, lr=0.05, n_epochs=7,
                  rng=np.random.default_rng(0)).minimize(linear_regression(X, y), np.zeros(3))
@@ -359,18 +359,18 @@ def test_sgd_refuses_an_objective_that_cannot_be_sampled() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Exercise 3 — Adam
+# Exercise 3 - Adam
 # --------------------------------------------------------------------------- #
 
 
 def test_the_first_adam_step_is_lr_times_the_sign_of_the_gradient() -> None:
-    """At t = 1, m̂ = g and √v̂ = |g|, so the ratio is sign(g) — exactly.
+    """At t = 1, m̂ = g and √v̂ = |g|, so the ratio is sign(g) - exactly.
 
     Checked over six orders of magnitude of gradient: that the size of the step does not
     depend on the size of the gradient is the whole of what Adam does.
 
     The tolerance is 10⁻⁴ rather than machine precision because of `eps`. It is added to
-    √v̂ to keep the division safe, so it also costs a relative eps/|g| — a millionth at
+    √v̂ to keep the division safe, so it also costs a relative eps/|g| - a millionth at
     |g| = 10⁻³ here, and the reason `eps` must stay far below the gradients you expect.
     """
     for magnitude in (1e-3, 1.0, 1e3):
@@ -410,7 +410,7 @@ def test_bias_correction_counts_steps_not_epochs() -> None:
     """Two batches in one epoch are two updates, so t goes 1 then 2.
 
     Every row of this problem is identical, so the batch gradient is the same whichever
-    half the shuffle produced — which makes the arithmetic below exact without pinning
+    half the shuffle produced - which makes the arithmetic below exact without pinning
     down the permutation. Indexing t by epoch leaves the second step at t = 1 and lands
     somewhere measurably different.
     """

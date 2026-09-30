@@ -1,4 +1,4 @@
-"""Exceptions. PROVIDED — do not edit."""
+"""Exceptions. PROVIDED - do not edit."""
 
 
 class OptlabError(Exception):
