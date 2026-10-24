@@ -101,7 +101,7 @@ class IPointwiseLoss(ABC):
 
 
 class ILeastSquaresProblem(ABC):
-    """A nonlinear least-squares problem: minimize 1/2||r(x)||^2.
+    """A nonlinear least-squares problem: minimize 1/2||r(w)||^2 over the parameters w.
 
     Deliberately NOT an `IObjective`. Gauss-Newton and Levenberg-Marquardt need the
     residuals and the Jacobian separately - collapsing them into value/gradient would
@@ -110,12 +110,12 @@ class ILeastSquaresProblem(ABC):
     """
 
     @abstractmethod
-    def residuals(self, x: Vec) -> Vec:
-        """r(x), of shape (m,)."""
+    def residuals(self, w: Vec) -> Vec:
+        """r(w), of shape (n,): one residual per observation."""
 
     @abstractmethod
-    def jacobian(self, x: Vec) -> Mat:
-        """J(x) = dr/dx, of shape (m, n)."""
+    def jacobian(self, w: Vec) -> Mat:
+        """J(w) = dr/dw, of shape (n, p): n observations, p parameters."""
 
 
 # --------------------------------------------------------------------------- #

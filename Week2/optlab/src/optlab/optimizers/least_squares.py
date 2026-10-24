@@ -1,4 +1,4 @@
-"""[DAY 5] Nonlinear least squares: exploiting the structure of 1/2||r(x)||^2.
+"""[DAY 5] Nonlinear least squares: exploiting the structure of 1/2||r(w)||^2.
 
 The exact Hessian is J^T J + sum r_i grad^2 r_i. Gauss-Newton drops the second term, which costs
 nothing to justify when the residuals are small or the model is nearly linear, and costs
@@ -15,7 +15,7 @@ from ..types import Vec
 
 
 class GaussNewton(IOptimizer):
-    """Solve (J^T J)*delta = -J^T r, then x <- x + delta.
+    """Solve (J^T J)*d = -J^T r, then w <- w + d.
 
     Cheap - only first derivatives - and nearly quadratic when residuals are small. But
     J^T J can be singular, and then it diverges. Day 5 asks you to make it diverge on
@@ -41,7 +41,7 @@ class GaussNewton(IOptimizer):
 
 
 class LevenbergMarquardt(IOptimizer):
-    """Solve (J^T J + lam*I)*delta = -J^T r, adapting lam by the gain ratio.
+    """Solve (J^T J + lam*I)*d = -J^T r, adapting lam by the gain ratio.
 
     lam -> 0 recovers Gauss-Newton; lam -> inf gives a small gradient step. Since J^T J + lam*I is
     positive definite for any lam > 0, Cholesky never fails here - a direct payoff of
@@ -50,7 +50,7 @@ class LevenbergMarquardt(IOptimizer):
     lam is the dual of a trust-region radius: larger lam means a smaller trusted step. The
     gain ratio
 
-        rho = (actual reduction) / (predicted reduction),   predicted = 1/2*delta^T(lam*delta - g)
+        rho = (actual reduction) / (predicted reduction),   predicted = 1/2*d^T(lam*d - g)
 
     drives it. rho small or negative: reject the step and increase lam (shrink the region).
     rho large: accept and decrease lam. This is day 4's damped Newton with a principled tau.

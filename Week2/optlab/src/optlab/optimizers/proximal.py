@@ -17,7 +17,7 @@ from ..types import Vec
 
 
 class ProximalGradient(IOptimizer):
-    """ISTA:  w^+ = prox_{alpha*Omega}(w - alpha*grad f(w)),  requiring alpha <= 1/L.
+    """ISTA:  w^+ = prox_{alpha*Omega}(w - alpha*grad f(w)),  requiring alpha <= 1/M.
 
     With `accelerated=True`, FISTA: the same step with Nesterov momentum on the
     extrapolation point, improving O(1/k) to O(1/k^2).

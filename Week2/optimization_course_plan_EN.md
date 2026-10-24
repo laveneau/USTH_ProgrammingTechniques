@@ -163,7 +163,7 @@ All interfaces are shipped whole in `interfaces.py` as **abstract base classes**
 | `IBatchObjective` | `n_samples`, `batch_gradient(x, idx)` | `GLMLoss` | 3 | `SGD`, `Adam` |
 | `ITwiceDifferentiable` | `hessian(x)` | `Quadratic`, `Rosenbrock`, `GLMLoss` | 4 | `NewtonDirection` |
 | `ILinearSolver` | `solve(A, b) -> Vec` | `CholeskySolver` | 4 | `NewtonDirection`, `GaussNewton`, `LevenbergMarquardt` |
-| `ILeastSquaresProblem` | `residuals(x)`, `jacobian(x)` | curve-fit problems | 5 | `GaussNewton`, `LevenbergMarquardt` |
+| `ILeastSquaresProblem` | `residuals(w)`, `jacobian(w)` | curve-fit problems | 5 | `GaussNewton`, `LevenbergMarquardt` |
 | `IRegularizer` | `value(w)`, `gradient(w)`, `prox(w, t)` | `NoRegularizer`, `L2` (D4), `L1`, `ElasticNet` (D6) | 4-6 | `RegularizedObjective`, `ProximalGradient` |
 | `ILineSearch` | `step(objective, x, g, d)` | `FixedStep`, `Armijo` | 2 | `DescentOptimizer` |
 | `IDirectionRule` | `direction(objective, x, g)` | `SteepestDescent`, `HeavyBall`, `NewtonDirection` | 2-4 | `DescentOptimizer` |
@@ -367,19 +367,19 @@ optlab/
 | 3:35 | 20 | Debrief |
 
 **Lecture.**
-- **Nonlinear least squares** `min 1/2||r(x)||^2`, `r: R^n->R^m`. Gradient `g=J^T r`, exact Hessian `grad^2 f=J^T J + sum r_i grad^2 r_i`.
-- **Gauss-Newton** drops the second term (valid for small residuals or near-linear models): solve `(J^T J)*delta=-J^T r`. Cheap (only first derivatives), near-quadratic when residuals are small, but `J^T J` can be singular and GN can diverge.
-- **Levenberg-Marquardt** solves `(J^T J + lam*I)*delta=-J^T r`: `lam->0` = Gauss-Newton, `lam->inf` = a small gradient step. `J^T J+lam*I` is **SPD for lam>0**, so Cholesky never fails - a direct payoff of Day 4.
-- **Trust region (10 min, naming what they code).** LM's `lam` is the dual of a trust-region radius `Delta`: bigger `lam` <=> smaller trusted step. The **gain ratio** `rho = (actual reduction)/(predicted reduction)`, predicted `= 1/2*delta^T(lam*delta - g)`, drives the update: `rho` small/negative => reject the step, increase `lam` (shrink the region); `rho` large => accept, decrease `lam`. This is exactly the Day-4 damped-Newton `H+tau*I` idea, now with a principled `tau`. Distinction to give: **line search** fixes the direction and searches the length; **trust region** fixes a radius and searches direction *and* length inside the ball.
+- **Nonlinear least squares** `min 1/2||r(w)||^2`, `r: R^p->R^n` (n observations `(x_i, y_i)`, p parameters `w`). Gradient `g=J^T r`, exact Hessian `grad^2 f=J^T J + sum r_i grad^2 r_i`.
+- **Gauss-Newton** drops the second term (valid for small residuals or near-linear models): solve `(J^T J)*d=-J^T r`. Cheap (only first derivatives), near-quadratic when residuals are small, but `J^T J` can be singular and GN can diverge.
+- **Levenberg-Marquardt** solves `(J^T J + lam*I)*d=-J^T r`: `lam->0` = Gauss-Newton, `lam->inf` = a small gradient step. `J^T J+lam*I` is **SPD for lam>0**, so Cholesky never fails - a direct payoff of Day 4.
+- **Trust region (10 min, naming what they code).** LM's `lam` is the dual of a trust-region radius `Delta`: bigger `lam` <=> smaller trusted step. The **gain ratio** `rho = (actual reduction)/(predicted reduction)`, predicted `= 1/2*d^T(lam*d - g)`, drives the update: `rho` small/negative => reject the step, increase `lam` (shrink the region); `rho` large => accept, decrease `lam`. This is exactly the Day-4 damped-Newton `H+tau*I` idea, now with a principled `tau`. Distinction to give: **line search** fixes the direction and searches the length; **trust region** fixes a radius and searches direction *and* length inside the ball.
 
 **Worked examples.**
-- Exponential decay `y=a*e^{-bt}+c`, `(a,b,c)=(2.5,1.3,0.5)`, `tin[0,4]`, noise `0.05`. From `(1,1,1)`: GN converges in a few steps. From `b=10` (model near-constant past `t~0.5`): `a,b` poorly determined, `J^T J` near-singular => GN drifts, LM copes.
+- Exponential decay `y=a*e^{-bx}+c`, `(a,b,c)=(2.5,1.3,0.5)`, `x in [0,4]`, noise `0.05`. From `(1,1,1)`: GN converges in a few steps. From `b=10` (the curve has decayed by `x~0.5`, so `b` barely changes the model): `J^T J` has a tiny eigenvalue in the `b` direction => GN overshoots, LM copes.
 - Two near-equal exponential rates => near-singular `J^T J` => GN fails, LM robust.
-- **LM is not global**: `y=a*sin(omega*t+phi)` with `omega` far off => converges to a *local* minimum. "Converged" != "best".
+- **LM is not global**: `y=a*sin(omega*x+phi)` with `omega` far off => converges to a *local* minimum. "Converged" != "best".
 
 **Lab 1 - `ILeastSquaresProblem` + Jacobian check (45 min).**
 ```python
-class ExpDecay:      # ILeastSquaresProblem: residuals(x)=model(t;x)-y, jacobian(x)
+class ExpDecay:      # ILeastSquaresProblem: residuals(w)=model(x;w)-y, jacobian(w)
 class GaussianPeak:  # another instance
 ```
 Write `residuals` and analytic `jacobian`; validate `jacobian` with `numerical_jacobian` (Day 4, DRY). Tests: Jacobian vs numerical; residual/gradient consistency `g=J^T r` vs `check_gradient` on `1/2||r||^2`.
@@ -388,13 +388,13 @@ Write `residuals` and analytic `jacobian`; validate `jacobian` with `numerical_j
 ```python
 class GaussNewton:   # IOptimizer: minimize(problem, x0); __init__(linear_solver)
 ```
-`delta = solve(J^T J, -J^T r)` via the **Day-4 `CholeskySolver`** (DIP - reused, not rewritten), then `x += delta` (optionally with Armijo on `1/2||r||^2`). Tests: recover exact parameters on noiseless data (`1e-8`); converges from a good start; **diverges** from the hard start (documented failure).
+`d = solve(J^T J, -J^T r)` via the **Day-4 `CholeskySolver`** (DIP - reused, not rewritten), then `w += d` (optionally with Armijo on `1/2||r||^2`). Tests: recover exact parameters on noiseless data (`1e-8`); converges from a good start; **diverges** from the hard start (documented failure).
 
 **Lab 3 - Levenberg-Marquardt (70 min).**
 ```python
 class LevenbergMarquardt:   # IOptimizer: __init__(linear_solver, lambda0=1e-3, ...)
 ```
-Damped solve `(J^T J + lam*I)*delta = -J^T r` (dense `+lam*I`), gain ratio `rho`, accept/reject, update `lam`. Because `J^T J+lam*I` is SPD, Cholesky always succeeds. Tests: converges where GN failed (hard start); recovers parameters; matches `scipy.optimize.least_squares(method="lm")` (oracle); on NIST StRD, hits the certified values from the "hard" start.
+Damped solve `(J^T J + lam*I)*d = -J^T r` (dense `+lam*I`), gain ratio `rho`, accept/reject, update `lam`. Because `J^T J+lam*I` is SPD, Cholesky always succeeds. Tests: converges where GN failed (hard start); recovers parameters; matches `scipy.optimize.least_squares(method="lm")` (oracle); on NIST StRD, hits the certified values from the "hard" start.
 
 **SOLID of the day.** ISP: `ILeastSquaresProblem` is its own interface (`residuals`, `jacobian`) - **not** an `IObjective`; GN/LM ask only for what they need. DIP: both receive an `ILinearSolver`; the Day-4 Cholesky is reused unchanged. O: GN and LM are new `IOptimizer`s; nothing existing is edited. S: the problem models the data, the solver factorizes, the optimizer iterates.
 

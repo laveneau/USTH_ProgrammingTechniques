@@ -40,28 +40,28 @@ class CountingSolver(ILinearSolver):
         return self.inner.solve(A, b)
 
 
-def _exp_problem(noise: float = 0.0, m: int = 40, seed: int = 11) -> ExpDecay:
-    t = np.linspace(0.0, 3.0, m)
-    y = EXP_TRUTH[0] * np.exp(-EXP_TRUTH[1] * t) + EXP_TRUTH[2]
+def _exp_problem(noise: float = 0.0, n: int = 40, seed: int = 11) -> ExpDecay:
+    x = np.linspace(0.0, 3.0, n)
+    y = EXP_TRUTH[0] * np.exp(-EXP_TRUTH[1] * x) + EXP_TRUTH[2]
     if noise:
-        y = y + np.random.default_rng(seed).normal(scale=noise, size=t.size)
-    return ExpDecay(t, y)
+        y = y + np.random.default_rng(seed).normal(scale=noise, size=x.size)
+    return ExpDecay(x, y)
 
 
 def _sinusoid() -> Sinusoid:
     """The notebook's data: a = 2, omega = 3, phi = 0.7, sigma = 0.1."""
-    t = np.linspace(0.0, 6.0, 120)
-    y = 2.0 * np.sin(3.0 * t + 0.7) + np.random.default_rng(23).normal(scale=0.1, size=t.size)
-    return Sinusoid(t, y)
+    x = np.linspace(0.0, 6.0, 120)
+    y = 2.0 * np.sin(3.0 * x + 0.7) + np.random.default_rng(23).normal(scale=0.1, size=x.size)
+    return Sinusoid(x, y)
 
 
-def _cost(problem: ILeastSquaresProblem, x: Vec) -> float:
-    r = problem.residuals(x)
+def _cost(problem: ILeastSquaresProblem, w: Vec) -> float:
+    r = problem.residuals(w)
     return 0.5 * float(r @ r)
 
 
-def _grad(problem: ILeastSquaresProblem, x: Vec) -> Vec:
-    return problem.jacobian(x).T @ problem.residuals(x)
+def _grad(problem: ILeastSquaresProblem, w: Vec) -> Vec:
+    return problem.jacobian(w).T @ problem.residuals(w)
 
 
 # --------------------------------------------------------------------------- #
@@ -70,7 +70,7 @@ def _grad(problem: ILeastSquaresProblem, x: Vec) -> Vec:
 
 
 def test_exp_decay_residuals_by_hand() -> None:
-    """At t = 0 the model is a + c whatever b is, which makes one row checkable on paper."""
+    """At x = 0 the model is a + c whatever b is, which makes one row checkable on paper."""
     problem = ExpDecay(np.array([0.0, 0.0]), np.array([1.0, 4.0]))
     np.testing.assert_allclose(problem.residuals(np.array([2.5, 99.0, 0.5])), [2.0, -1.0])
 
@@ -86,7 +86,7 @@ def test_residuals_are_model_minus_data_not_the_other_way_round() -> None:
 
 
 @pytest.mark.parametrize(
-    ("problem", "x"),
+    ("problem", "w"),
     [
         (ExpDecay(np.linspace(0.0, 3.0, 12), np.linspace(1.0, 0.2, 12)),
          np.array([2.0, 0.8, 0.3])),
@@ -98,18 +98,18 @@ def test_residuals_are_model_minus_data_not_the_other_way_round() -> None:
     ids=["ExpDecay", "GaussianPeak", "Sinusoid"],
 )
 def test_the_analytic_jacobian_matches_finite_differences(
-    problem: ILeastSquaresProblem, x: Vec
+    problem: ILeastSquaresProblem, w: Vec
 ) -> None:
     """Exercise 1's own instruction, as a test. A sign error here does not raise - it
     just makes the optimizer fail mysteriously, and you lose an hour."""
-    numeric = numerical_jacobian(problem.residuals, x)
-    analytic = problem.jacobian(x)
+    numeric = numerical_jacobian(problem.residuals, w)
+    analytic = problem.jacobian(w)
     assert analytic.shape == numeric.shape
     np.testing.assert_allclose(analytic, numeric, rtol=1e-6, atol=1e-7)
 
 
 @pytest.mark.parametrize(
-    ("problem", "x"),
+    ("problem", "w"),
     [
         (ExpDecay(np.linspace(0.0, 3.0, 12), np.linspace(1.0, 0.2, 12)),
          np.array([2.0, 0.8, 0.3])),
@@ -120,21 +120,21 @@ def test_the_analytic_jacobian_matches_finite_differences(
     ],
     ids=["ExpDecay", "GaussianPeak", "Sinusoid"],
 )
-def test_jt_r_is_the_gradient_of_half_r_squared(problem: ILeastSquaresProblem, x: Vec) -> None:
+def test_jt_r_is_the_gradient_of_half_r_squared(problem: ILeastSquaresProblem, w: Vec) -> None:
     """Day 1's `check_gradient`, still earning its keep three labworks later."""
-    assert check_gradient(lambda z: _cost(problem, z), lambda z: _grad(problem, z), x) < 1e-6
+    assert check_gradient(lambda z: _cost(problem, z), lambda z: _grad(problem, z), w) < 1e-6
 
 
 def test_the_jacobian_does_not_depend_on_the_data() -> None:
-    """r = model(x) - y, so dr/dx = dmodel/dx and y drops out of the derivative entirely.
+    """r = model(w) - y, so dr/dw = dmodel/dw and y drops out of the derivative entirely.
 
     Worth knowing, and worth testing: a Jacobian that changes with y has y somewhere it
     should not be.
     """
-    t = np.linspace(0.0, 3.0, 9)
-    x = np.array([2.0, 0.8, 0.3])
+    x = np.linspace(0.0, 3.0, 9)
+    w = np.array([2.0, 0.8, 0.3])
     np.testing.assert_allclose(
-        ExpDecay(t, np.zeros(9)).jacobian(x), ExpDecay(t, np.ones(9) * 17.0).jacobian(x)
+        ExpDecay(x, np.zeros(9)).jacobian(w), ExpDecay(x, np.ones(9) * 17.0).jacobian(w)
     )
 
 
@@ -165,10 +165,10 @@ def test_gauss_newton_recovers_the_parameters_from_a_good_start() -> None:
 
 
 def test_gauss_newton_solves_a_linear_problem_in_one_step() -> None:
-    """When the model is linear in x, J^T J is the exact Hessian and GN *is* Newton.
+    """When the model is linear in w, J^T J is the exact Hessian and GN *is* Newton.
 
     `ExpDecay` with b pinned is not linear, so the test builds a genuinely linear
-    least-squares problem: r(x) = Ax - b. One step must land on the normal-equation
+    least-squares problem: r(w) = Aw - b. One step must land on the normal-equation
     solution, and the second must find nothing left to do.
     """
 
@@ -177,10 +177,10 @@ def test_gauss_newton_solves_a_linear_problem_in_one_step() -> None:
             self.A = A
             self.b = b
 
-        def residuals(self, x: Vec) -> Vec:
-            return self.A @ x - self.b
+        def residuals(self, w: Vec) -> Vec:
+            return self.A @ w - self.b
 
-        def jacobian(self, x: Vec) -> Mat:
+        def jacobian(self, w: Vec) -> Mat:
             return self.A
 
     rng = np.random.default_rng(5)
@@ -205,11 +205,11 @@ def test_gauss_newton_uses_the_injected_solver() -> None:
 def test_gauss_newton_diverges_from_the_hard_start() -> None:
     """**Exercise 2 asks you to write this and leave it in.**
 
-    From (1, 10, 1) the model is nearly constant past t ~ 0.5, so the columns of J for a
-    and c are nearly parallel and J^T J is near-singular. The first step alone takes the
-    cost from 6.6 to 9.3e+85. This is not a defect to be patched: it is the motivation
-    for Levenberg-Marquardt, and a test that records it stops anyone "fixing" GN into
-    something that hides it.
+    From (1, 10, 1) the curve has decayed by x ~ 0.5, so b barely changes the model: its
+    column of J is tiny, and J^T J has a tiny eigenvalue in the direction of b. The first
+    step alone takes the cost from 6.6 to 9.3e+85. This is not a defect to be patched: it
+    is the motivation for Levenberg-Marquardt, and a test that records it stops anyone
+    "fixing" GN into something that hides it.
     """
     problem = _exp_problem()
     result = GaussNewton(CholeskySolver()).minimize(problem, np.array([1.0, 10.0, 1.0]))
@@ -220,15 +220,15 @@ def test_gauss_newton_diverges_from_the_hard_start() -> None:
 def test_the_first_gauss_newton_step_from_the_hard_start_is_catastrophic() -> None:
     """The mechanism behind the previous test, isolated from the loop.
 
-    Nothing in Gauss-Newton limits the length of delta. Notebook 2 solved exactly this
+    Nothing in Gauss-Newton limits the length of d. Notebook 2 solved exactly this
     problem for gradient descent with a line search; LM solves it a different way.
     """
     problem = _exp_problem()
-    x = np.array([1.0, 10.0, 1.0])
-    J = problem.jacobian(x)
-    delta = np.linalg.solve(J.T @ J, -J.T @ problem.residuals(x))
-    assert _cost(problem, x) < 10.0
-    assert _cost(problem, x + delta) > 1e20
+    w = np.array([1.0, 10.0, 1.0])
+    J = problem.jacobian(w)
+    d = np.linalg.solve(J.T @ J, -J.T @ problem.residuals(w))
+    assert _cost(problem, w) < 10.0
+    assert _cost(problem, w + d) > 1e20
 
 
 @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
@@ -240,9 +240,9 @@ def test_gauss_newton_reports_which_failure_happened() -> None:
     unbounded step walks the iterate off the edge of float64 ("iterates left the finite
     range"). Diagnosing the first as the second sends you looking in the wrong place.
     """
-    t = np.linspace(0.0, 4.0, 60)
-    y = 5.0 * np.exp(-1.3 * t) + 1.0 + np.random.default_rng(3).normal(scale=0.05, size=t.size)
-    problem = ExpDecay(t, y)
+    x = np.linspace(0.0, 4.0, 60)
+    y = 5.0 * np.exp(-1.3 * x) + 1.0 + np.random.default_rng(3).normal(scale=0.05, size=x.size)
+    problem = ExpDecay(x, y)
 
     solver = GaussNewton(CholeskySolver(), max_iter=100)
     singular = solver.minimize(problem, np.array([1.0, 0.1, 0.0]))
@@ -295,19 +295,19 @@ DEGENERATE_J = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
 
 
 class RankDeficient(ILeastSquaresProblem):
-    """r(x) = J*x - b with the two parameters genuinely indistinguishable.
+    """r(w) = J*w - b with the two parameters genuinely indistinguishable.
 
-    Only the sum x0 + x1 is determined; the cost is minimised at 17/14, along a whole
+    Only the sum w[0] + w[1] is determined; the cost is minimised at 17/14, along a whole
     line of equally good parameter vectors.
     """
 
     def __init__(self) -> None:
         self.b = np.array([1.0, 2.0, 4.0])
 
-    def residuals(self, x: Vec) -> Vec:
-        return DEGENERATE_J @ x - self.b
+    def residuals(self, w: Vec) -> Vec:
+        return DEGENERATE_J @ w - self.b
 
-    def jacobian(self, x: Vec) -> Mat:
+    def jacobian(self, w: Vec) -> Mat:
         return DEGENERATE_J
 
 
@@ -338,17 +338,17 @@ def test_cholesky_can_never_fail_inside_levenberg_marquardt() -> None:
 
 
 def test_levenberg_marquardt_rejects_a_step_that_makes_things_worse() -> None:
-    """The gain ratio, observed from outside: on a rejection x does not move.
+    """The gain ratio, observed from outside: on a rejection w does not move.
 
     From the notebook's hard start the first two attempts are rejected (rho = -85 and
     -1.5), so the first two recorded events must sit at the same cost and report a step
     length of zero.
     """
-    t = np.linspace(0.0, 4.0, 60)
-    y = 5.0 * np.exp(-1.3 * t) + 1.0 + np.random.default_rng(3).normal(scale=0.05, size=t.size)
+    x = np.linspace(0.0, 4.0, 60)
+    y = 5.0 * np.exp(-1.3 * x) + 1.0 + np.random.default_rng(3).normal(scale=0.05, size=x.size)
     history = History()
     LevenbergMarquardt(CholeskySolver(), max_iter=200, observers=[history]).minimize(
-        ExpDecay(t, y), np.array([0.5, 0.05, 4.0])
+        ExpDecay(x, y), np.array([0.5, 0.05, 4.0])
     )
 
     rejected = [e for e in history.events if e.step_size == 0.0]
@@ -394,10 +394,10 @@ def test_levenberg_marquardt_matches_scipy() -> None:
 
 def test_the_same_two_classes_fit_a_different_model() -> None:
     """`GaussianPeak` is a change of data, not of code - the payoff of the interface."""
-    t = np.linspace(-3.0, 5.0, 80)
-    y = 3.0 * np.exp(-((t - 1.2) ** 2) / (2 * 0.8**2))
+    x = np.linspace(-3.0, 5.0, 80)
+    y = 3.0 * np.exp(-((x - 1.2) ** 2) / (2 * 0.8**2))
     result = LevenbergMarquardt(CholeskySolver(), max_iter=300).minimize(
-        GaussianPeak(t, y), np.array([1.0, 0.0, 1.0])
+        GaussianPeak(x, y), np.array([1.0, 0.0, 1.0])
     )
     assert result.converged is True
     np.testing.assert_allclose(np.abs(result.x), [3.0, 1.2, 0.8], atol=1e-6)
@@ -425,7 +425,7 @@ def test_the_sign_of_omega_is_not_identifiable() -> None:
     """A separate lesson that looks like the same one and is not.
 
     (a, omega, phi) and (-a, -omega, -phi) describe the *same* curve:
-    -a*sin(-omega*t - phi) = a*sin(omega*t + phi) for every t. So two different
+    -a*sin(-omega*x - phi) = a*sin(omega*x + phi) for every x. So two different
     parameter vectors give identical predictions and identical cost, the minimum is
     not unique, and no optimizer can prefer one of them.
     The fix belongs in the model - constrain omega > 0 - not in the optimizer.

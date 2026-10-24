@@ -19,12 +19,12 @@ Datasets, by the day that uses them:
   5    curve_*, NIST StRD          Gauss-Newton and Levenberg-Marquardt; certified values
   6    diabetes, sparse_synthetic, outliers   ridge vs lasso; selection; Huber
 
-Every file holds `X` (n, d) and `y` (n,), which is all `load()` returns. Some carry extra
+Every file holds `X` (n, p) and `y` (n,), which is all `load()` returns. Some carry extra
 arrays for the instructor and the notebooks, read with `np.load` directly:
-  - synthetic sets: `x_true` (curves) or `w_true` (regression), the generating parameters;
+  - synthetic sets: `w_true`, the generating parameters;
   - NIST sets: `start1`, `start2` (the two official starts, far and near) and
     `certified`, `certified_sd` (the certified estimates and their standard deviations).
-Binary labels are stored as 0.0/1.0. Curve sets store t as the single column of X.
+Binary labels are stored as 0.0/1.0. Curve sets store their inputs x as the single column of X.
 """
 
 import io
@@ -154,19 +154,19 @@ def prepare_nist() -> None:
 
 def prepare_curves(rng: np.random.Generator) -> None:
     """One set per model of problems/curve_fitting.py, with the truth alongside."""
-    t = np.linspace(0.0, 4.0, 60)
+    x = np.linspace(0.0, 4.0, 60)
     truth = np.array([3.0, 1.4, 0.5])
-    y = truth[0] * np.exp(-truth[1] * t) + truth[2] + rng.normal(scale=0.02, size=t.size)
-    save("curve_expdecay", t, y, x_true=truth)
+    y = truth[0] * np.exp(-truth[1] * x) + truth[2] + rng.normal(scale=0.02, size=x.size)
+    save("curve_expdecay", x, y, w_true=truth)
 
     truth = np.array([2.0, 1.5, 0.4])
-    y = truth[0] * np.exp(-((t - truth[1]) ** 2) / (2.0 * truth[2] ** 2))
-    save("curve_gaussian", t, y + rng.normal(scale=0.03, size=t.size), x_true=truth)
+    y = truth[0] * np.exp(-((x - truth[1]) ** 2) / (2.0 * truth[2] ** 2))
+    save("curve_gaussian", x, y + rng.normal(scale=0.03, size=x.size), w_true=truth)
 
-    t = np.linspace(0.0, 2.0 * np.pi, 80)
+    x = np.linspace(0.0, 2.0 * np.pi, 80)
     truth = np.array([1.5, 2.0, 0.5])
-    y = truth[0] * np.sin(truth[1] * t + truth[2])
-    save("curve_sinusoid", t, y + rng.normal(scale=0.05, size=t.size), x_true=truth)
+    y = truth[0] * np.sin(truth[1] * x + truth[2])
+    save("curve_sinusoid", x, y + rng.normal(scale=0.05, size=x.size), w_true=truth)
 
 
 def prepare_sparse(rng: np.random.Generator) -> None:

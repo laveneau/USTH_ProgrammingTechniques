@@ -29,11 +29,11 @@ TRUE_SUPPORT = [0, 3, 7]
 TRUE_VALUES = [3.0, -2.0, 1.5]
 
 
-def _sparse_problem(n: int = 60, d: int = 20, seed: int = 7) -> tuple[GLMLoss, float]:
-    """A design where only 3 of d coefficients are real, plus the largest safe step 1/L."""
+def _sparse_problem(n: int = 60, p: int = 20, seed: int = 7) -> tuple[GLMLoss, float]:
+    """A design where only 3 of p coefficients are real, plus the largest safe step 1/M."""
     rng = np.random.default_rng(seed)
-    X = rng.normal(size=(n, d))
-    w_true = np.zeros(d)
+    X = rng.normal(size=(n, p))
+    w_true = np.zeros(p)
     w_true[TRUE_SUPPORT] = TRUE_VALUES
     y = X @ w_true + rng.normal(scale=0.3, size=n)
     smooth = GLMLoss(X, y, SquaredError())
