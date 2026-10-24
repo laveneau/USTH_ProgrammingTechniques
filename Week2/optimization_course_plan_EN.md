@@ -337,7 +337,7 @@ optlab/
 | 3:15 | 20 | Lab 4: regularizer, ridge for free |
 | 3:35 | 20 | Debrief |
 
-**Lecture.** Newton from Taylor: `Hp=-g`; quadratic => one step; local **quadratic** convergence. GLM Hessian `X^T DX/n`, `D=diag(phi'')`: linear `D=I` (one step = normal equations); logistic `D=diag(sigma(1-sigma))`; **IRLS** = Newton as reweighted least squares. **Statistics link**: the Hessian is the observed **Fisher information**; its inverse estimates `cov(w_hat)`. **Cholesky** `A=LL^T` (`n^3/3`) succeeds **iff** SPD; failure <=> not positive definite. Damping (line search on the Newton step) and `H+tau*I`; ridge `H+lam*I` is always SPD.
+**Lecture.** Newton from Taylor: `Hd=-g`; quadratic => one step; local **quadratic** convergence. GLM Hessian `X^T DX/n`, `D=diag(phi'')`: linear `D=I` (one step = normal equations); logistic `D=diag(sigma(1-sigma))`; **IRLS** = Newton as reweighted least squares. **Statistics link**: the Hessian is the observed **Fisher information**; its inverse estimates `cov(w_hat)`. **Cholesky** `A=LL^T` (`n^3/3`) succeeds **iff** SPD; failure <=> not positive definite. Damping (line search on the Newton step) and `H+tau*I`; ridge `H+lam*I` is always SPD.
 
 **Worked examples.** Newton 1-D `e^x-2x`: `1->0.7358->0.6940->0.693147` (digits double); Cholesky by hand `[[4,2,2],[2,5,3],[2,3,6]]->L=[[2,0,0],[1,2,0],[1,1,2]]`; Cholesky fails on `[[1,2],[2,1]]` (`L_22^2=-3`); separable Iris, `lam=0` => `||w||->inf`.
 
