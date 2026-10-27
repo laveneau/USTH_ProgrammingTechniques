@@ -405,7 +405,7 @@ Damped solve `(J^T J + lam*I)*d = -J^T r` (dense `+lam*I`), gain ratio `rho`, ac
 ### Day 6 - Regularization, sparsity, and robustness (proximal, lasso, Huber)
 **Headline.** Ridge was smooth; **lasso is not** - and non-smoothness is exactly what yields sparsity. Meet the proximal gradient method, then robust regression. Close with a benchmark and a code review.
 
-**Deliverable.** `L1`, `ElasticNet`; `ProximalGradient` (ISTA, optional FISTA); `Huber`, `PoissonNLL`; benchmark; extensibility challenge.
+**Deliverable.** `L1`, `ElasticNet`; `ProximalGradient` (ISTA and FISTA); `Huber`, `PoissonNLL`; benchmark; two classes added in new files, with a SOLID discussion.
 
 | Time | Len | Activity |
 |---|---|---|
@@ -413,20 +413,20 @@ Damped solve `(J^T J + lam*I)*d = -J^T r` (dense `+lam*I`), gain ratio `rho`, ac
 | 0:55 | 65 | Lab 1: proximal gradient & lasso |
 | 2:00 | 40 | Lab 2: Huber (robust) & Poisson |
 | 2:40 | 40 | Lab 3: benchmark |
-| 3:20 | 35 | Lab 4: extensibility challenge |
+| 3:20 | 35 | Lab 4: extend optlab, judge the design |
 | 3:55 | 20 | Debrief: cross code review |
 
-**Lecture.** Why smooth methods fail on `||w||_1` (non-differentiable at 0, and that kink pins coordinates to exactly 0 -> sparsity). **Proximal operator** `prox_{tr}(v)=argmin 1/2||w-v||^2+t r(w)`: L1 -> **soft-threshold** `sign(v)*max(|v|-t,0)`; L2 -> shrinkage `v/(1+t)`; 0 -> identity. **Proximal gradient (ISTA)** `w^+=prox_{alpha*r}(w-alpha*grad smooth)`, `alpha<=1/L`; **FISTA** adds momentum (bonus). Sparsity = feature selection = Laplace prior (MAP). **Robust regression**: squared error is outlier-sensitive; **Huber** is quadratic near 0, linear far out (bounded influence) - and *smooth* (contrast with L1's non-smoothness in the parameters).
+**Lecture.** Why smooth methods fail on `||w||_1` (non-differentiable at 0, and that kink pins coordinates to exactly 0 -> sparsity). **Proximal operator** `prox_{tr}(v)=argmin 1/2||w-v||^2+t r(w)`: L1 -> **soft-threshold** `sign(v)*max(|v|-t,0)`; L2 -> shrinkage `v/(1+t)`; 0 -> identity. **Proximal gradient (ISTA)** `w^+=prox_{alpha*r}(w-alpha*grad smooth)`, `alpha<=1/L`; **FISTA** adds momentum. Sparsity = feature selection = Laplace prior (MAP). **Robust regression**: squared error is outlier-sensitive; **Huber** is quadratic near 0, linear far out (bounded influence) - and *smooth* (contrast with L1's non-smoothness in the parameters).
 
 **Worked examples.** Soft-threshold at `v=(3,-0.4,0.1)`, `t=0.5` -> `(2.5,0,0)`; 1-D lasso `1/2(w-3)^2+lam|w|` -> `w=soft(3,lam)` (`2.5` at `lam=0.5`, `0` at `lam>=3`); Huber vs squared under one gross outlier.
 
-**Lab 1 - Proximal gradient & lasso (65 min).** `L1` (`prox`=soft-threshold; `gradient` raises), `ElasticNet`; `ProximalGradient(smooth, reg, step)` (ISTA; FISTA optional). **Reuses `GLMLoss` unchanged**; lasso = `ProximalGradient(GLMLoss, L1)` (OCP). Tests: **`IRegularizer` contract test** (prox identities); hand soft-threshold; vs scikit-learn `Lasso` (oracle); recover a known sparse `w*`; `L1.gradient` raises. Experiment: the **regularization path** on *diabetes*.
+**Lab 1 - Proximal gradient & lasso (65 min).** `L1` (`prox`=soft-threshold; `gradient` raises), `ElasticNet`; `ProximalGradient(smooth, reg, step)` (ISTA, and FISTA with `accelerated=True`). **Reuses `GLMLoss` unchanged**; lasso = `ProximalGradient(GLMLoss, L1)` (OCP). Tests: **`IRegularizer` contract test** (prox identities); hand soft-threshold; vs scikit-learn `Lasso` (oracle); recover a known sparse `w*`; `L1.gradient` raises. Experiment: the **regularization path** on *diabetes*.
 
 **Lab 2 - Huber & Poisson (40 min).** `Huber`, `PoissonNLL` as `IPointwiseLoss` => GD/Newton work on them **for free** (OCP payoff). Tests: derivatives vs numerical; `Huber -> least squares` as `delta->inf`; robust fit vs outlier; Poisson vs scikit-learn `PoissonRegressor`.
 
 **Lab 3 - Benchmark (40 min).** `benchmarks/run.py` -> CSV -> notebook 06. Problems: ill-conditioned quadratic, Rosenbrock, linear (raw California), logistic (breast cancer, digits), curve fit (NIST), lasso (diabetes), a large logistic for stochastic. Methods: GD+Armijo, momentum, SGD, Adam, Newton, ridge, GN, LM, lasso. Count iterations/epochs/evals/wall-clock/final loss vs oracles. **One-pager** "which optimizer for which problem?" (graded).
 
-**Lab 4 - Extensibility challenge (35 min).** Add one new implementation of an existing interface, **editing no existing `src/` file** (checked by `git diff`): `FISTA`, `GroupLasso` (block prox), `Nesterov` (`IDirectionRule`), or `PoissonNLL` if not done. Justify any forced edit in `DESIGN.md`.
+**Lab 4 - Extend optlab, judge the design (35 min).** Add two new implementations of existing interfaces, each in a **new file**, from `GroupLasso` (`IRegularizer`, block prox), `LogCosh` (`IPointwiseLoss`), `ConjugateGradientSolver` (`ILinearSolver`) and `RelativeDecreaseBelow` (`IStoppingCriterion`). A notebook cell fingerprints `src/` before and after, so the edited files are listed without git. Register each class in its contract test, then discuss each in `DESIGN.md` principle by principle (O, L, I, D): what was edited, which contract test fails, which method can only raise, who receives it.
 
 **Debrief - cross code review (20 min).** Checklist over a peer's repo: SRP, ISP, LSP (contract tests pass on all implementations?), OCP/DIP, DRY, tests, `mypy --strict`, error messages. Retrospective: which interface made an addition trivial; where the loss-as-likelihood view paid off.
 

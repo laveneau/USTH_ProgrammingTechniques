@@ -22,11 +22,20 @@ One entry per principle, naming the concrete moment in *your* code:
 - **I** -
 - **D** -
 
-## 3. The extensibility challenge (day 6)
+## 3. Extending optlab (day 6, Exercise 4)
 
-Which implementation you added, and the output of `git diff --stat src/` proving no
-existing file under `src/` was edited. If an edit *was* forced, say exactly which
-interface was too narrow and what you would change about it.
+The two classes you added, and what the notebook's comparison cell listed: the new files,
+and the existing files you had to edit. Then, for each class, one short paragraph per
+principle:
+
+- **O** - which existing files did you edit, and why could you avoid it, or not?
+- **L** - does it pass every contract test of its interface? If not, which promise can it
+  not keep, and does any optimizer rely on that promise?
+- **I** - did the interface make you write a method that can only raise?
+- **D** - which existing class receives it, and does that class need to know which one it got?
+
+Where the design failed, say exactly which interface was too narrow and what you would
+change in it.
 
 ## 4. Anything you would do differently
 
